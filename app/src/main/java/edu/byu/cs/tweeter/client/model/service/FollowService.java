@@ -1,60 +1,96 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.BackgroundTaskUtils;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.GetFollowingTask;
-import edu.byu.cs.tweeter.client.model.service.backgroundTask.handler.GetFollowingTaskHandler;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTask;
+import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTaskUtils;
+import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
+import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
+import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersCountHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowersHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingCountHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.GetFollowingHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.IsFollowerHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.handler.SimpleNotificationHandler;
+import edu.byu.cs.tweeter.client.backgroundTask.observer.CountObserver;
+import edu.byu.cs.tweeter.client.backgroundTask.observer.PageTaskObserver;
+import edu.byu.cs.tweeter.client.backgroundTask.observer.SimpleNotificationObserver;
+import edu.byu.cs.tweeter.client.backgroundTask.observer.SingleObserver;
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.User;
 
-/**
- * Contains the business logic for getting the users a user is following.
- */
-public class FollowService {
+public class FollowService extends Service {
 
-    public static final String URL_PATH = "/getfollowing";
+    private BackgroundTaskUtils utils = createUtils();
 
-    /**
-     * An observer interface to be implemented by observers who want to be notified when
-     * asynchronous operations complete.
-     */
-    public interface GetFollowingObserver {
-        void handleSuccess(List<User> followees, boolean hasMorePages);
-        void handleFailure(String message);
-        void handleException(Exception exception);
+    public interface SimpleObserver extends SimpleNotificationObserver {
     }
 
-    /**
-     * Creates an instance.
-     */
-    public FollowService() {}
-
-    /**
-     * Requests the users that the user specified in the request is following.
-     * Limits the number of followees returned and returns the next set of
-     * followees after any that were returned in a previous request.
-     * This is an asynchronous operation.
-     *
-     * @param authToken the session auth token.
-     * @param targetUser the user for whom followees are being retrieved.
-     * @param limit the maximum number of followees to return.
-     * @param lastFollowee the last followee returned in the previous request (can be null).
-     */
-    public void getFollowees(AuthToken authToken, User targetUser, int limit, User lastFollowee, GetFollowingObserver observer) {
-        GetFollowingTask followingTask = getGetFollowingTask(authToken, targetUser, limit, lastFollowee, observer);
-        BackgroundTaskUtils.runTask(followingTask);
+    public interface PageObserver extends PageTaskObserver<User> {
     }
 
-    /**
-     * Returns an instance of {@link GetFollowingTask}. Allows mocking of the
-     * GetFollowingTask class for testing purposes. All usages of GetFollowingTask
-     * should get their instance from this method to allow for proper mocking.
-     *
-     * @return the instance.
-     */
-    // This method is public so it can be accessed by test cases
-    public GetFollowingTask getGetFollowingTask(AuthToken authToken, User targetUser, int limit, User lastFollowee, GetFollowingObserver observer) {
-        return new GetFollowingTask(this, authToken, targetUser, limit, lastFollowee, new GetFollowingTaskHandler(observer));
+    public interface CountingObserver extends CountObserver {
+        void updateFollowersCount(int count);
+        void updateFolloweeCount(int count);
     }
+
+    public interface RelObserver extends SingleObserver<Boolean> {
+        void updateSelectedUserFollowingAndFollowers();
+        void updateFollowRelationship(boolean isFollower);
+    }
+
+    public void loadMoreFollowingItems(User user, int pageSize, User lastFollowee, PageObserver observer) {
+        GetFollowingTask getFollowingTask = new GetFollowingTask(Cache.getInstance().getCurrUserAuthToken(),
+                user, pageSize, lastFollowee, new GetFollowingHandler(observer));
+        utils.runTask(getFollowingTask);
+    }
+
+    public void loadMoreFollowersItems(User user, int pageSize, User lastFollower, PageObserver observer) {
+        GetFollowersTask getFollowersTask = new GetFollowersTask(Cache.getInstance().getCurrUserAuthToken(),
+                user, pageSize, lastFollower, new GetFollowersHandler(observer));
+        utils.runTask(getFollowersTask);
+    }
+
+    public void unfollowUser(User selectedUser, RelObserver observer) {
+        UnfollowTask unfollowTask = new UnfollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser, new IsFollowerHandler(observer));
+        utils.runTask(unfollowTask);
+    }
+
+    public void followUser(User selectedUser, RelObserver observer) {
+        BackgroundTask followTask = new FollowTask(Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser, new IsFollowerHandler(observer));
+       utils.runTask(followTask);
+    }
+
+    public void getCounts(User selectedUser, CountObserver observer) {
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        // Get count of most recently selected user's followers.
+        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser, new GetFollowersCountHandler(observer));
+        executor.execute(followersCountTask);
+
+        // Get count of most recently selected user's followees (who they are following)
+        GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser, new GetFollowingCountHandler(observer));
+        executor.execute(followingCountTask);
+
+    }
+
+    public void isFollower(User selectedUser, RelObserver observer) {
+        IsFollowerTask isFollowerTask = new IsFollowerTask(Cache.getInstance().getCurrUserAuthToken(),
+                Cache.getInstance().getCurrUser(), selectedUser, new IsFollowerHandler(observer));
+        utils.runTask(isFollowerTask);
+    }
+
+
 }
+

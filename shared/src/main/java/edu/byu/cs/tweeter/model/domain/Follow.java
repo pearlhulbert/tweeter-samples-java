@@ -4,6 +4,8 @@ package edu.byu.cs.tweeter.model.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
+import edu.byu.cs.tweeter.model.domain.User;
+
 /**
  * Represents a follow relationship.
  */
@@ -11,21 +13,21 @@ public class Follow implements Serializable {
     /**
      * The user doing the following.
      */
-    public User follower;
+    public edu.byu.cs.tweeter.model.domain.User follower;
     /**
      * The user being followed.
      */
-    public User followee;
+    public edu.byu.cs.tweeter.model.domain.User followee;
 
     public Follow() {
     }
 
-    public Follow(User follower, User followee) {
+    public Follow(edu.byu.cs.tweeter.model.domain.User follower, edu.byu.cs.tweeter.model.domain.User followee) {
         this.follower = follower;
         this.followee = followee;
     }
 
-    public User getFollower() {
+    public edu.byu.cs.tweeter.model.domain.User getFollower() {
         return follower;
     }
 
