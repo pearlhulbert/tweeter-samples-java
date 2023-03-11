@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 public abstract class AuthenticatedTask extends BackgroundTask {
 
-    private AuthToken authToken;
+    protected AuthToken authToken;
     public AuthenticatedTask(AuthToken authtoken, Handler messageHandler) {
         super(messageHandler);
         this.authToken = authtoken;

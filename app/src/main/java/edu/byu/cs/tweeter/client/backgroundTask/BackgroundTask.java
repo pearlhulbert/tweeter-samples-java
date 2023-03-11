@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import edu.byu.cs.tweeter.client.model.service.net.ServerFacade;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public abstract class BackgroundTask implements Runnable {
@@ -19,6 +20,7 @@ public abstract class BackgroundTask implements Runnable {
      * Message handler that will receive task results.
      */
     protected Handler messageHandler;
+    protected ServerFacade serverFacade;
 
     public BackgroundTask(Handler messageHandler) {
         this.messageHandler = messageHandler;
@@ -48,7 +50,7 @@ public abstract class BackgroundTask implements Runnable {
 
     protected abstract void loadSuccessBundle(Bundle msgBundle);
 
-    private void sendFailedMessage(String message) {
+    protected void sendFailedMessage(String message) {
         Bundle msgBundle = createBundle();
         msgBundle.putString(MESSAGE_KEY, message);
 
@@ -75,6 +77,13 @@ public abstract class BackgroundTask implements Runnable {
             Log.e(LOG_TAG, "Failed to get followees", ex);
             sendExceptionMessage(ex);
         }
+    }
+
+    ServerFacade getServerFacade() {
+        if(serverFacade == null) {
+            serverFacade = new ServerFacade();
+        }
+        return serverFacade;
     }
 
     protected FakeData getFakeData() {

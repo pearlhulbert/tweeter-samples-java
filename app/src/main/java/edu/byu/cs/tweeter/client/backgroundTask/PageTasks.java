@@ -15,19 +15,19 @@ public abstract class PageTasks<T> extends AuthenticatedTask {
     public static final String ITEMS_KEY = "items";
     public static final String MORE_PAGES_KEY = "more-pages";
 
-    private User targetUser;
+    protected User targetUser;
     /**
      * Maximum number of followed users to return (i.e., page size).
      */
-    private int limit;
+    protected int limit;
     /**
      * The last person being followed returned in the previous page of results (can be null).
      * This allows the new page to begin where the previous page ended.
      */
-    private T lastItem;
+    protected T lastItem;
 
-    private List<T> items;
-    private boolean hasMorePages;
+    protected List<T> items;
+    protected boolean hasMorePages;
 
     public User getTargetUser() {
         return targetUser;
