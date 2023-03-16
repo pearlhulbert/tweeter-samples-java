@@ -88,7 +88,7 @@ public class FeedFragment extends Fragment implements PagedPresenter.PageView<St
 
         feedRecyclerView.addOnScrollListener(new FeedRecyclerViewPaginationScrollListener(layoutManager));
 
-        presenter = new GetFeedPresenter(this);
+        presenter = new GetFeedPresenter(this, user);
         presenter.loadMoreItems();
 
         return view;

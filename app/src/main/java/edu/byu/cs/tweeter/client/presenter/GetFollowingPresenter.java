@@ -16,8 +16,8 @@ public class GetFollowingPresenter extends UserPresenter {
 
     private FollowService followService;
 
-    public GetFollowingPresenter(PageView view) {
-        super(view);
+    public GetFollowingPresenter(PageView view, User targetUser) {
+        super(view, targetUser);
         followService = new FollowService();
     }
 

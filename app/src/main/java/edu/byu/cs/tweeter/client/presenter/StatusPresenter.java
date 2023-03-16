@@ -4,11 +4,12 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 public abstract class StatusPresenter extends PagedPresenter<Status> {
 
-    public StatusPresenter(PagedPresenter.PageView view) {
-        super(view);
+    public StatusPresenter(PagedPresenter.PageView view, User targetUser) {
+        super(view, targetUser);
     }
 
     protected class GetStatusesObserver implements StatusService.Observer {

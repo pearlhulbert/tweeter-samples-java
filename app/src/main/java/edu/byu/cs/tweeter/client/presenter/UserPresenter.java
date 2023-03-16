@@ -8,8 +8,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 public abstract class UserPresenter extends PagedPresenter<User>
 {
 
-    public UserPresenter(PagedPresenter.PageView view) {
-        super(view);
+    public UserPresenter(PagedPresenter.PageView view, User targetUser) {
+        super(view, targetUser);
     }
 
     protected class GetFollowsObserver implements FollowService.PageObserver {

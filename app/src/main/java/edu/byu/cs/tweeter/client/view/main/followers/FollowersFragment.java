@@ -89,7 +89,7 @@ public class FollowersFragment extends Fragment implements PagedPresenter.PageVi
 
         followersRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
 
-        presenter = new GetFollowersPresenter(this);
+        presenter = new GetFollowersPresenter(this, user);
         presenter.loadMoreItems();
         return view;
     }

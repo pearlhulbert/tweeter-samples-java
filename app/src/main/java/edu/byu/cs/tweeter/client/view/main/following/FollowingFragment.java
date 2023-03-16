@@ -87,7 +87,7 @@ public class FollowingFragment extends Fragment implements PagedPresenter.PageVi
 
         followingRecyclerView.addOnScrollListener(new FollowRecyclerViewPaginationScrollListener(layoutManager));
 
-        presenter = new GetFollowingPresenter(this);
+        presenter = new GetFollowingPresenter(this, user);
         presenter.loadMoreItems();
         return view;
     }

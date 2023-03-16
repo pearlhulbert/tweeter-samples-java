@@ -17,8 +17,8 @@ public class GetFeedPresenter extends StatusPresenter {
 
     private StatusService statusService;
 
-    public GetFeedPresenter(PagedPresenter.PageView view) {
-        super(view);
+    public GetFeedPresenter(PagedPresenter.PageView view, User targetUser) {
+        super(view, targetUser);
         statusService = new StatusService();
     }
 

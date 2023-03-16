@@ -4,6 +4,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.client.presenter.view.View;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -21,9 +22,10 @@ public abstract class PagedPresenter<T> {
         protected PageView<T> view;
         protected UserService userService;
 
-        public PagedPresenter(PageView view) {
+        public PagedPresenter(PageView view, User targetUser) {
                 this.view = view;
                 this.userService = new UserService();
+                this.targetUser = targetUser;
         }
 
         public interface PageView<T> extends View {

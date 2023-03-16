@@ -19,8 +19,8 @@ public class GetStoryPresenter extends StatusPresenter {
     private StatusService statusService;
 
 
-    public GetStoryPresenter(PageView view) {
-        super(view);
+    public GetStoryPresenter(PageView view, User targetUser) {
+        super(view, targetUser);
         statusService = new StatusService();
     }
 
