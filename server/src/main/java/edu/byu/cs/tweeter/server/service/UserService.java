@@ -21,15 +21,6 @@ public class UserService {
         return getUserDAO().login(request);
     }
 
-    /**
-     * Returns the {@link FakeData} object used to generate dummy users and auth tokens.
-     * This is written as a separate method to allow mocking of the {@link FakeData}.
-     *
-     * @return a {@link FakeData} instance.
-     */
-    FakeData getFakeData() {
-        return FakeData.getInstance();
-    }
 
     public RegisterResponse register(RegisterRequest registerRequest) {
         if(registerRequest.getAlias() == null){
