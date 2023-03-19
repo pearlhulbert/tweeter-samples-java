@@ -33,9 +33,9 @@ public class GetStoryTask extends PageTasks<Status> {
     protected Pair<List<Status>, Boolean> getItems() {
         try {
             String targetUserAlias = targetUser == null ? null : targetUser.getAlias();
-            String post = lastItem == null ? null : lastItem.getPost();
+            //String post = lastItem == null ? null : lastItem.getPost();
 
-            StoryRequest request = new StoryRequest(authToken, targetUserAlias, post, limit, lastItem);
+            StoryRequest request = new StoryRequest(authToken, targetUserAlias, limit, lastItem);
             StoryResponse response = getServerFacade().getStory(request, URL_PATH);
 
             if (response.isSuccess()) {
@@ -44,7 +44,7 @@ public class GetStoryTask extends PageTasks<Status> {
                 sendFailedMessage(response.getMessage());
             }
         } catch (IOException | TweeterRemoteException ex) {
-            Log.e(LOG_TAG, "Failed to get feed", ex);
+            Log.e(LOG_TAG, "Failed to get story", ex);
             sendExceptionMessage(ex);
         }
         return null;

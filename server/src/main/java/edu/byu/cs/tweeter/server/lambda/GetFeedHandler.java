@@ -4,10 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.response.FeedResponse;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
-import edu.byu.cs.tweeter.server.service.FollowService;
 import edu.byu.cs.tweeter.server.service.StatusService;
 
 public class GetFeedHandler implements RequestHandler<FeedRequest, FeedResponse> {

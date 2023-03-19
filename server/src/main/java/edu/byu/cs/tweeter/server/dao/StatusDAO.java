@@ -19,7 +19,6 @@ public class StatusDAO {
         // TODO: Generates dummy data. Replace with a real implementation.
         assert request.getLimit() > 0;
         assert request.getUserAlias() != null;
-        assert request.getPost() != null;
 
         List<Status> allFeed = getDummyStatuses();
         List<Status> responseFeed = new ArrayList<>(request.getLimit());
@@ -73,7 +72,6 @@ public class StatusDAO {
         // TODO: Generates dummy data. Replace with a real implementation.
         assert request.getLimit() > 0;
         assert request.getUserAlias() != null;
-        assert request.getPost() != null;
 
         List<Status> allStory = getDummyStatuses();
         List<Status> responseStory = new ArrayList<>(request.getLimit());

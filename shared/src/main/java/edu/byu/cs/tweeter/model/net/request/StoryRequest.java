@@ -6,18 +6,16 @@ import edu.byu.cs.tweeter.model.domain.Status;
 public class StoryRequest {
     private AuthToken authToken;
     private String userAlias;
-    private String post;
     private int limit;
     private Status lastStatus;
 
     private StoryRequest() {}
 
-    public StoryRequest(AuthToken authToken, String userAlias, String post, int limit, Status lastStatus) {
+    public StoryRequest(AuthToken authToken, String userAlias, int limit, Status lastStatus) {
+        this.authToken = authToken;
         this.userAlias = userAlias;
         this.limit = limit;
         this.lastStatus = lastStatus;
-        this.authToken = authToken;
-        this.post = post;
     }
 
     public AuthToken getAuthToken() {
@@ -26,14 +24,6 @@ public class StoryRequest {
 
     public void setAuthToken(AuthToken authToken) {
         this.authToken = authToken;
-    }
-
-    public String getPost() {
-        return post;
-    }
-
-    public void setPost(String post) {
-        this.post = post;
     }
 
     public String getUserAlias() {

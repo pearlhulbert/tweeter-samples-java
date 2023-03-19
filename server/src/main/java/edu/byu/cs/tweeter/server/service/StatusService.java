@@ -9,25 +9,25 @@ import edu.byu.cs.tweeter.server.dao.StatusDAO;
 public class StatusService {
 
     public FeedResponse getFeed(FeedRequest request) {
-        if (request.getPost() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a post");
-        }
-        if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
-        }
+//        if (request.getUserAlias() == null) {
+//            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
+//        }
+        // build and print json string
+        // delete get-followees and rebuild then see if makes difference
         if (request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            throw new RuntimeException("[Bad Request] Request needs to have a positive limit" + request.getLimit());
         }
+        if (request.getLastStatus() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a positive limit" + request.getLimit() + " " + request.getLastStatus() + " " + request.getUserAlias());
+        }
+
         return getStatusDAO().getFeed(request);
     }
 
     public StoryResponse getStory(StoryRequest request) {
-        if (request.getPost() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a post");
-        }
-        if (request.getUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
-        }
+//        if (request.getUserAlias() == null) {
+//            throw new RuntimeException("[Bad Request] Request needs to have a user alias");
+//        }
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }

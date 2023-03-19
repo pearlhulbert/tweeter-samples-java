@@ -39,7 +39,7 @@ public abstract class PagedPresenter<T> {
                 if (!isLoading) {   // This guard is important for avoiding a race condition in the scrolling code.
                         isLoading = true;
                         view.setLoadingFooter(isLoading);
-                        getItems(authToken, targetUser, pageSize, lastItem);
+                        getItems(authToken, targetUser, PAGE_SIZE, lastItem);
                 }
         }
 

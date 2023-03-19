@@ -32,9 +32,13 @@ public class GetFeedTask extends PageTasks<Status> {
     protected Pair<List<Status>, Boolean> getItems() {
         try {
             String targetUserAlias = targetUser == null ? null : targetUser.getAlias();
-            String post = lastItem == null ? null : lastItem.getPost();
+            //String post = lastItem == null ? null : lastItem.getPost();
+            FeedRequest request = new FeedRequest(authToken, targetUserAlias, limit, lastItem);
+            System.out.println("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());
+//            if (true) {
+//                throw new RuntimeException("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());
+//            }
 
-            FeedRequest request = new FeedRequest(authToken, targetUserAlias, post, limit, lastItem);
             FeedResponse response = getServerFacade().getFeed(request, URL_PATH);
 
             if (response.isSuccess()) {
@@ -45,6 +49,7 @@ public class GetFeedTask extends PageTasks<Status> {
         } catch (IOException | TweeterRemoteException ex) {
             Log.e(LOG_TAG, "Failed to get feed", ex);
             sendExceptionMessage(ex);
+            throw new RuntimeException(ex);
         }
         return null;
     }
