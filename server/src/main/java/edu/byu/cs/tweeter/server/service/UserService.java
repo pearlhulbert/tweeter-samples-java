@@ -2,8 +2,10 @@ package edu.byu.cs.tweeter.server.service;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.util.FakeData;
@@ -40,6 +42,10 @@ public class UserService {
 
         // TODO: Generates dummy data. Replace with a real implementation.
         return getUserDAO().register(registerRequest);
+    }
+
+    public LogoutResponse logout(LogoutRequest request) {
+        return getUserDAO().logout(request);
     }
 
     UserDAO getUserDAO() {

@@ -8,12 +8,17 @@ import android.util.Log;
 import edu.byu.cs.tweeter.client.backgroundTask.handler.SimpleNotificationHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowRequest;
+import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowResponse;
+import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 
 /**
  * Background task that removes a following relationship between two users.
  */
 public class UnfollowTask extends BackgroundTask {
     private static final String LOG_TAG = "UnfollowTask";
+    private static final String URL_PATH = "/unfollow";
 
 
     /**
@@ -37,6 +42,17 @@ public class UnfollowTask extends BackgroundTask {
 
     @Override
     protected void processTask() {
+        try {
+            UnFollowRequest request = new UnFollowRequest(followee, authToken);
+            UnFollowResponse response = getServerFacade().unFollow(request, URL_PATH);
+
+            if (!response.isSuccess()) {
+                sendFailedMessage(response.getMessage());
+            }
+        } catch (Exception ex) {
+            Log.e(LOG_TAG, ex.getMessage(), ex);
+            sendExceptionMessage(ex);
+        }
     }
 
     @Override

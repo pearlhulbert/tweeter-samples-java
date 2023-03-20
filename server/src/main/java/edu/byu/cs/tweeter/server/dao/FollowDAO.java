@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 import edu.byu.cs.tweeter.util.FakeData;
 
 /**
@@ -165,5 +169,15 @@ public class FollowDAO {
      */
     FakeData getFakeData() {
         return FakeData.getInstance();
+    }
+
+    public FollowResponse follow(FollowRequest request) {
+        assert request.getFollowee() != null;
+        return new FollowResponse();
+    }
+
+    public UnFollowResponse unFollow(UnFollowRequest request) {
+        assert request.getFollowee() != null;
+        return new UnFollowResponse();
     }
 }

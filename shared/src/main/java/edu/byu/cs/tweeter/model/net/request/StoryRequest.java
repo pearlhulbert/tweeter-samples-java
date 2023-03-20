@@ -11,6 +11,18 @@ public class StoryRequest {
 
     private StoryRequest() {}
 
+    public void setUserAlias(String userAlias) {
+        this.userAlias = userAlias;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public void setLastStatus(Status lastStatus) {
+        this.lastStatus = lastStatus;
+    }
+
     public StoryRequest(AuthToken authToken, String userAlias, int limit, Status lastStatus) {
         this.authToken = authToken;
         this.userAlias = userAlias;

@@ -3,6 +3,8 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 import android.os.Handler;
 import android.util.Log;
 
+import com.google.gson.JsonSerializer;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -34,6 +36,7 @@ public class GetFeedTask extends PageTasks<Status> {
             String targetUserAlias = targetUser == null ? null : targetUser.getAlias();
             //String post = lastItem == null ? null : lastItem.getPost();
             FeedRequest request = new FeedRequest(authToken, targetUserAlias, limit, lastItem);
+            //String entityBody = JsonSerializer.serialize(request);
             System.out.println("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());
 //            if (true) {
 //                throw new RuntimeException("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());

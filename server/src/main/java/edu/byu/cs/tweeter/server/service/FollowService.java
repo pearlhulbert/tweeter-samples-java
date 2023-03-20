@@ -1,9 +1,14 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.domain.Follow;
+import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 
 /**
@@ -36,6 +41,20 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
         return getFollowingDAO().getFollowers(request);
+    }
+
+    public FollowResponse follow(FollowRequest request) {
+        if(request.getFollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+        }
+        return getFollowingDAO().follow(request);
+    }
+
+    public UnFollowResponse unFollow(UnFollowRequest request) {
+        if(request.getFollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+        }
+        return getFollowingDAO().unFollow(request);
     }
 
     /**
