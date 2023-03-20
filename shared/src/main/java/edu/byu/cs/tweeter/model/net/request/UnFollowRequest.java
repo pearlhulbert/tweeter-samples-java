@@ -7,6 +7,8 @@ public class UnFollowRequest {
     private User followee;
     private AuthToken authToken;
 
+    private UnFollowRequest() {}
+
     public UnFollowRequest(User followee, AuthToken authToken) {
         this.followee = followee;
         this.authToken = authToken;

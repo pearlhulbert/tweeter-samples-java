@@ -5,11 +5,15 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowerCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 import edu.byu.cs.tweeter.util.FakeData;
@@ -19,25 +23,16 @@ import edu.byu.cs.tweeter.util.FakeData;
  */
 public class FollowDAO {
 
-    /**
-     * Gets the count of users from the database t
-        if(request.getLimit() > 0) {
-            if (allFollowees != null) {hat the user specified is following. The
-     * current implementation uses generated data and doesn't actually access a database.
-     *
-     * @param follower the User whose count of how many following is desired.
-     * @return said count.
-     */
-    public Integer getFolloweeCount(User follower) {
+    public FollowingCountResponse getFolloweeCount(FollowingCountRequest request) {
         // TODO: uses the dummy data.  Replace with a real implementation.
-        assert follower != null;
-        return getDummyFollowees().size();
+        assert request.getTargetUser() != null;
+        return new FollowingCountResponse(getDummyFollowees().size());
     }
 
-    public Integer getFollowerCount(User follower) {
+    public FollowerCountResponse getFollowerCount(FollowerCountRequest request) {
         // TODO: uses the dummy data.  Replace with a real implementation.
-        assert follower != null;
-        return getDummyFollowers().size();
+        assert request.getTargetUser() != null;
+        return new FollowerCountResponse(getDummyFollowers().size());
     }
 
     /**

@@ -2,11 +2,15 @@ package edu.byu.cs.tweeter.server.service;
 
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerRequest;
+import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowerCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
+import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
@@ -55,6 +59,20 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a followee");
         }
         return getFollowingDAO().unFollow(request);
+    }
+
+    public FollowingCountResponse getFollowingCount(FollowingCountRequest request) {
+        if(request.getTargetUser() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a target user");
+        }
+        return getFollowingDAO().getFolloweeCount(request);
+    }
+
+    public FollowerCountResponse getFollowerCount(FollowerCountRequest request) {
+        if(request.getTargetUser() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a target user");
+        }
+        return getFollowingDAO().getFollowerCount(request);
     }
 
     /**

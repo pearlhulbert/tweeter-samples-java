@@ -7,6 +7,8 @@ public class PostStatusRequest {
     private Status status;
     private AuthToken authToken;
 
+    private PostStatusRequest() {}
+
     public PostStatusRequest(Status status, AuthToken authToken) {
         this.status = status;
         this.authToken = authToken;
