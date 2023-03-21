@@ -7,7 +7,6 @@ public class UserRequest {
 
     private String alias;
     private AuthToken authToken;
-    private User user;
 
     private UserRequest() {}
 

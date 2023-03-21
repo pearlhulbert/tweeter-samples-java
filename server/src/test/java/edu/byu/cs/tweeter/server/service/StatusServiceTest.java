@@ -1,25 +1,60 @@
 package edu.byu.cs.tweeter.server.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.net.request.FeedRequest;
-import edu.byu.cs.tweeter.model.net.response.FeedResponse;
-import edu.byu.cs.tweeter.server.lambda.GetFeedHandler;
+import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.StoryRequest;
+import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.StoryResponse;
+import edu.byu.cs.tweeter.server.dao.FollowDAO;
+import edu.byu.cs.tweeter.server.dao.StatusDAO;
 
 public class StatusServiceTest {
 
+    private StoryRequest request;
+    private StoryResponse expectedResponse;
+    private StatusDAO mockStatusDAO;
+    private StatusService statusServiceSpy;
+
+    @BeforeEach
+    public void setup() {
+        AuthToken authToken = new AuthToken();
+
+        Status currStatus = new Status("post, post, post", new User("FirstName", "LastName", null), "date", null, null);
+
+        Status resultStatus1 = new Status("post1", new User("FirstName1", "LastName1",
+                "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png"), "date", null, null);
+        Status resultStatus2 = new Status("post2", new User("FirstName2", "LastName2",
+                "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png"), "date", null, null);
+        Status resultStatus3 = new Status("post3", new User("FirstName3", "LastName3",
+                "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png"), "date", null, null);
+
+        // Setup a request object to use in the tests
+        request = new StoryRequest(authToken, "user", 10, currStatus);
+
+        // Setup a mock FollowDAO that will return known responses
+        //expectedResponse = new FollowingResponse(Arrays.asList(resultUser1, resultUser2, resultUser3), false);
+        mockStatusDAO = Mockito.mock(StatusDAO.class);
+        Mockito.when(mockStatusDAO.getStory(request)).thenReturn(expectedResponse);
+
+        statusServiceSpy = Mockito.spy(StatusService.class);
+        Mockito.when(statusServiceSpy.getStatusDAO()).thenReturn(mockStatusDAO);
+    }
+
+    /**
+     * Verify that the {@link FollowService#getFollowees(FollowingRequest)}
+     * method returns the same result as the {@link FollowDAO} class.
+     */
     @Test
-    public void testFeed() {
-        AuthToken token = new AuthToken();
-        token.setToken("token");
-        String userAlias = "userAlias";
-        FeedRequest request = new FeedRequest(token, userAlias, 10, null);
-        GetFeedHandler handler = new GetFeedHandler();
-        FeedResponse response = handler.handleRequest(request, null);
-        Assertions.assertNotNull(response);
-        System.out.println("testFeed");
+    public void testGetFollowees_validRequest_correctResponse() {
+        StoryResponse response = statusServiceSpy.getStory(request);
+        Assertions.assertEquals(expectedResponse, response);
     }
 }
 
