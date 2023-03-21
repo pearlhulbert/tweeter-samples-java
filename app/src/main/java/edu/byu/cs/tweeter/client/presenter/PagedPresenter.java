@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.List;
@@ -43,8 +44,8 @@ public abstract class PagedPresenter<T> {
                 }
         }
 
-        public void loadUser(TextView alias) {
-                userService.loadUser(alias, new GetUserObserver());
+        public void loadUser(TextView userAlias) {
+                userService.loadUser(userAlias, new GetUserObserver());
         }
 
         protected abstract void getItems(AuthToken authToken, User targetUser, int pageSize, T lastItem);

@@ -1,17 +1,18 @@
 package edu.byu.cs.tweeter.server.service;
 
-import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 
@@ -84,5 +85,18 @@ public class FollowService {
      */
     FollowDAO getFollowingDAO() {
         return new FollowDAO();
+    }
+
+    public IsFollowerResponse isFollowing(IsFollowerRequest request) {
+        if(request.getFollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+        }
+        if (request.getFollower() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower");
+        }
+        if (request.getFollower().getAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+        }
+        return getFollowingDAO().isFollowing(request);
     }
 }

@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.server.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
@@ -9,12 +10,14 @@ import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.UnFollowRequest;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
+import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnFollowResponse;
 import edu.byu.cs.tweeter.util.FakeData;
 
@@ -174,5 +177,12 @@ public class FollowDAO {
     public UnFollowResponse unFollow(UnFollowRequest request) {
         assert request.getFollowee() != null;
         return new UnFollowResponse();
+    }
+
+
+    public IsFollowerResponse isFollowing(IsFollowerRequest request) {
+        assert request.getFollowee() != null;
+        assert request.getFollower() != null;
+        return new IsFollowerResponse(new Random().nextInt() > 0);
     }
 }

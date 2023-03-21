@@ -15,7 +15,7 @@ public class ServerFacade {
 
     // TODO: Set this to the invoke URL of your API. Find it by going to your API in AWS, clicking
     //  on stages in the right-side menu, and clicking on the stage you deployed your API to.
-    private static final String SERVER_URL = "https://tkl8ylu1z7.execute-api.us-west-2.amazonaws.com/tweeter-notification-count";
+    private static final String SERVER_URL = "https://tkl8ylu1z7.execute-api.us-west-2.amazonaws.com/tweeter-fix-user";
 
     private final ClientCommunicator clientCommunicator = new ClientCommunicator(SERVER_URL);
 
@@ -84,5 +84,13 @@ public class ServerFacade {
 
     public FollowingCountResponse getFollowingCount(FollowingCountRequest request, String urlPath) throws IOException, TweeterRemoteException {
         return clientCommunicator.doPost(urlPath, request, null, FollowingCountResponse.class);
+    }
+
+    public UserResponse getUser(UserRequest request, String urlPath) throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, UserResponse.class);
+    }
+
+    public IsFollowerResponse isFollower(IsFollowerRequest request, String urlPath) throws IOException, TweeterRemoteException {
+        return clientCommunicator.doPost(urlPath, request, null, IsFollowerResponse.class);
     }
 }

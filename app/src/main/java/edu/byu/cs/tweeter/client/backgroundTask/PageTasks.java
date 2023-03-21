@@ -14,8 +14,6 @@ public abstract class PageTasks<T> extends AuthenticatedTask {
 
     public static final String ITEMS_KEY = "items";
     public static final String MORE_PAGES_KEY = "more-pages";
-
-    protected User targetUser;
     /**
      * Maximum number of followed users to return (i.e., page size).
      */
@@ -28,6 +26,8 @@ public abstract class PageTasks<T> extends AuthenticatedTask {
 
     protected List<T> items;
     protected boolean hasMorePages;
+
+    protected User targetUser;
 
     public User getTargetUser() {
         return targetUser;
@@ -43,9 +43,9 @@ public abstract class PageTasks<T> extends AuthenticatedTask {
 
     public PageTasks(AuthToken authToken, Handler messageHandler, User targetUser, int limit, T lastItem) {
         super(authToken, messageHandler);
-        this.targetUser = targetUser;
         this.limit = limit;
         this.lastItem = lastItem;
+        this.targetUser = targetUser;
     }
 
     @Override
