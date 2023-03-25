@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -47,10 +48,9 @@ public class StatusService extends Service {
     }
 
     private String getFormattedDateTime() throws ParseException {
-        SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
-
-        return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String time = String.valueOf(timestamp.getTime());
+        return time;
     }
 
     public int findUrlEndIndex(String word) {

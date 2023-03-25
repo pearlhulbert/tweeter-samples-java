@@ -10,16 +10,15 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.StoryRequest;
-import edu.byu.cs.tweeter.model.net.response.FollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.StoryResponse;
-import edu.byu.cs.tweeter.server.dao.FollowDAO;
-import edu.byu.cs.tweeter.server.dao.StatusDAO;
+import edu.byu.cs.tweeter.server.dao.LameFollowDAO;
+import edu.byu.cs.tweeter.server.dao.LameStatusDAO;
 
 public class StatusServiceTest {
 
     private StoryRequest request;
     private StoryResponse expectedResponse;
-    private StatusDAO mockStatusDAO;
+    private LameStatusDAO mockStatusDAO;
     private StatusService statusServiceSpy;
 
     @BeforeEach
@@ -40,7 +39,7 @@ public class StatusServiceTest {
 
         // Setup a mock FollowDAO that will return known responses
         //expectedResponse = new FollowingResponse(Arrays.asList(resultUser1, resultUser2, resultUser3), false);
-        mockStatusDAO = Mockito.mock(StatusDAO.class);
+        mockStatusDAO = Mockito.mock(LameStatusDAO.class);
         Mockito.when(mockStatusDAO.getStory(request)).thenReturn(expectedResponse);
 
         statusServiceSpy = Mockito.spy(StatusService.class);
@@ -49,7 +48,7 @@ public class StatusServiceTest {
 
     /**
      * Verify that the {@link FollowService#getFollowees(FollowingRequest)}
-     * method returns the same result as the {@link FollowDAO} class.
+     * method returns the same result as the {@link LameFollowDAO} class.
      */
     @Test
     public void testGetFollowees_validRequest_correctResponse() {

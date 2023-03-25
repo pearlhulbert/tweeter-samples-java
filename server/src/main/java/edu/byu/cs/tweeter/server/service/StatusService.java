@@ -1,16 +1,25 @@
 package edu.byu.cs.tweeter.server.service;
 
-import com.google.gson.JsonSerializer;
-
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.StoryRequest;
 import edu.byu.cs.tweeter.model.net.response.FeedResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.model.net.response.StoryResponse;
-import edu.byu.cs.tweeter.server.dao.StatusDAO;
+import edu.byu.cs.tweeter.server.dao.LameStatusDAO;
+import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 
 public class StatusService {
+
+    private DAOFactory daoFactory;
+
+    public StatusService(DAOFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
+    public StatusService() {
+        this.daoFactory = null;
+    }
 
     public FeedResponse getFeed(FeedRequest request) {
         if (request.getUserAlias() == null) {
@@ -38,15 +47,33 @@ public class StatusService {
         return getStatusDAO().getStory(request);
     }
 
-    StatusDAO getStatusDAO() {
-        return new StatusDAO();
+    LameStatusDAO getStatusDAO() {
+        return new LameStatusDAO();
     }
 
     public PostStatusResponse postStatus(PostStatusRequest request) {
         if (request.getStatus() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a status");
         }
-        return getStatusDAO().postStatus(request);
+        //return getStatusDAO().postStatus(request);
+
+        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+        if (!isValidToken) {
+            return new PostStatusResponse("Invalid auth token, user no longer active");
+        }
+
+        boolean posted = daoFactory.getStoryDAO().postStatus(request.getStatus());
+        if (!posted) {
+            return new PostStatusResponse("Failed to post status");
+        }
+
+        // notify followers, sort by index like exercise
+        // we will grab the followers and then post the status to their feed after updating our story
+        //zoom recording ~18:00
+
+        return new PostStatusResponse();
+
     }
+
 
 }
