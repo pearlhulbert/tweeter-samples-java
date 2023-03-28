@@ -55,7 +55,6 @@ public class StatusService {
         if (request.getStatus() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a status");
         }
-        //return getStatusDAO().postStatus(request);
 
         boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
         if (!isValidToken) {
