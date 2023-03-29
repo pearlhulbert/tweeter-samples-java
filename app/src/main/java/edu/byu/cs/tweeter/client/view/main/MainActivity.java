@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         presenter = new MainPresenter(this);
-        selectedUser = (User) getIntent().getSerializableExtra(CURRENT_USER_KEY);
+        selectedUser = Cache.getInstance().getCurrUser();
         if (selectedUser == null) {
             throw new RuntimeException("User not passed to activity");
         }

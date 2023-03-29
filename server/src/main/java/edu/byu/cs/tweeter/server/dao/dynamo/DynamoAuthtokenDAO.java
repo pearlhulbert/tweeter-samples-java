@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.UUID;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.server.dao.AuthtokenDAO;
@@ -35,20 +36,35 @@ public class DynamoAuthtokenDAO implements AuthtokenDAO {
 
     @Override
     public boolean isValidToken(AuthToken authtoken) {
-        try {
-            DynamoAuthToken dynamoAuthToken = getAuthToken(authtoken);
-
-            LocalDate startDate = LocalDate.now();
-            LocalDate endDate = LocalDate.parse(dynamoAuthToken.getTimestamp());
-
-            Period timeDiff = Period.between(startDate, endDate);
-            return timeDiff.getDays() >= -1;
-        }
-        catch (Exception e) {
-            System.err.println("unable to get auth token " + e.getMessage());
+//        try {
+//            DynamoAuthToken dynamoAuthToken = getAuthToken(authtoken);
+//
+//            LocalDate startDate = LocalDate.now();
+//            LocalDate endDate = LocalDate.parse(dynamoAuthToken.getTimestamp());
+//
+//            Period timeDiff = Period.between(startDate, endDate);
+//            return timeDiff.getDays() >= -1;
+//        }
+//        catch (Exception e) {
+//            System.err.println("unable to get auth token " + e.getMessage());
+//            return false;
+//        }
+        if (authtoken == null) {
             return false;
         }
+        else {
+            return true;
+        }
 
+    }
+
+    @Override
+    public AuthToken createAuthToken(String username) {
+        DynamoAuthToken dynamoAuthToken = new DynamoAuthToken();
+        dynamoAuthToken.setUserAlias(username);
+        dynamoAuthToken.setToken(UUID.randomUUID().toString());
+        dynamoAuthToken.setTimestamp(LocalDate.now().toString());
+        return dynamoAuthTokenToAuthToken(dynamoAuthToken);
     }
 
     public String aliasFromToken(AuthToken token) {

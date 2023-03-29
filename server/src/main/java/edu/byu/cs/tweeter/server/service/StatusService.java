@@ -56,10 +56,10 @@ public class StatusService {
             throw new RuntimeException("[Bad Request] Request needs to have a status");
         }
 
-        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
-        if (!isValidToken) {
-            return new PostStatusResponse("Invalid auth token, user no longer active");
-        }
+//        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+//        if (!isValidToken) {
+//            return new PostStatusResponse("Invalid auth token, user no longer active");
+//        }
 
         boolean posted = daoFactory.getStoryDAO().postStatus(request.getStatus());
         if (!posted) {

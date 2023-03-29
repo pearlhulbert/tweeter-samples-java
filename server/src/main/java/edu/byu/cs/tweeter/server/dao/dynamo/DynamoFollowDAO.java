@@ -135,7 +135,7 @@ public class DynamoFollowDAO implements FollowDAO {
                 return result;
         }
 
-        public DataPage<DynamoFollow>  getFollowers(String followeeHandle, int pageSize, String lastFollower) {
+        public DataPage<DynamoFollow> getFollowers(String followeeHandle, int pageSize, String lastFollower) {
                 DynamoDbIndex<DynamoFollow> index = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class)).index(IndexName);
                 Key key = Key.builder()
                         .partitionValue(followeeHandle)

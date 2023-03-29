@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
@@ -9,8 +10,19 @@ import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 import edu.byu.cs.tweeter.model.net.response.UserResponse;
 import edu.byu.cs.tweeter.server.dao.LameUserDAO;
+import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 
 public class UserService {
+
+    private DAOFactory daoFactory;
+
+    public UserService(DAOFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
+    public UserService() {
+        this.daoFactory = null;
+    }
 
     public LoginResponse login(LoginRequest request) {
         if(request.getUsername() == null){
@@ -18,9 +30,11 @@ public class UserService {
         } else if(request.getPassword() == null) {
             throw new RuntimeException("[Bad Request] Missing a password");
         }
-
-        // TODO: Generates dummy data. Replace with a real implementation.
-        return getUserDAO().login(request);
+        AuthToken token = daoFactory.getAuthtokenDAO().createAuthToken(request.getUsername());
+        if (token == null) {
+            throw new RuntimeException("[Internal Server Error] Could not create auth token");
+        }
+        return daoFactory.getUserDAO().login(request.getUsername(), request.getPassword(), token);
     }
 
 

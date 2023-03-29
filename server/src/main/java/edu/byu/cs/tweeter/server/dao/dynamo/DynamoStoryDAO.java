@@ -48,7 +48,7 @@ public class DynamoStoryDAO implements StoryDAO {
     }
 
 
-    public DataPage<DynamoStatus> getStory(String userAlias, int pageSize, String lastUserAlias) {
+    public DataPage<DynamoStatus> getStory(String userAlias, int pageSize, String lastDate) {
         DynamoDbTable<DynamoStatus> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoStatus.class));
         Key key = Key.builder()
                 .partitionValue(userAlias)
@@ -58,11 +58,11 @@ public class DynamoStoryDAO implements StoryDAO {
                 .queryConditional(QueryConditional.keyEqualTo(key))
                 .limit(pageSize);
 
-        if(isNonEmptyString(lastUserAlias)) {
+        if(isNonEmptyString(lastDate)) {
             // Build up the Exclusive Start Key (telling DynamoDB where you left off reading items)
             Map<String, AttributeValue> startKey = new HashMap<>();
             startKey.put(UserAliasAttr, AttributeValue.builder().s(userAlias).build());
-            //startKey.put(DAttr, AttributeValue.builder().s(lastFollowee).build());
+            startKey.put(DateAttr, AttributeValue.builder().s(lastDate).build());
 
             requestBuilder.exclusiveStartKey(startKey);
         }

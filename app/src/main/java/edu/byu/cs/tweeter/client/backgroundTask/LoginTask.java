@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 import android.os.Handler;
 import android.util.Log;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
@@ -26,8 +27,9 @@ public class LoginTask extends AuthenticateTask {
         try {
             LoginRequest request = new LoginRequest(alias, password);
             LoginResponse response = getServerFacade().login(request, URL_PATH);
-
+            System.out.println("LoginTask: " + response.toString());
             if (response.isSuccess()) {
+                Cache.getInstance().setCurrUser(response.getUser());
                 return new Pair<>(response.getUser(), response.getAuthToken());
             } else {
                 sendFailedMessage(response.getMessage());
