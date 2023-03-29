@@ -2,8 +2,10 @@ package edu.byu.cs.tweeter.server.dao.dynamo.domain;
 
 import java.util.List;
 
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 @DynamoDbBean
 public class DynamoStatus {
@@ -25,6 +27,7 @@ public class DynamoStatus {
         this.mentions = mentions;
     }
 
+    @DynamoDbAttribute("post")
     public String getPost() {
         return post;
     }
@@ -33,6 +36,8 @@ public class DynamoStatus {
         this.post = post;
     }
 
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("userAlias")
     public String getUserAlias() {
         return userAlias;
     }
@@ -41,7 +46,8 @@ public class DynamoStatus {
         this.userAlias = userAlias;
     }
 
-    @DynamoDbPartitionKey
+    @DynamoDbSortKey
+    @DynamoDbAttribute("date")
     public Long getDate() {
         return date;
     }
@@ -50,6 +56,7 @@ public class DynamoStatus {
         this.date = date;
     }
 
+    @DynamoDbAttribute("urls")
     public List<String> getUrls() {
         return urls;
     }
@@ -58,6 +65,7 @@ public class DynamoStatus {
         this.urls = urls;
     }
 
+    @DynamoDbAttribute("mentions")
     public List<String> getMentions() {
         return mentions;
     }
