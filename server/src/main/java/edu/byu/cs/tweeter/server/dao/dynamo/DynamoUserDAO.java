@@ -49,9 +49,9 @@ public class DynamoUserDAO implements UserDAO {
         user.setFollowerCount(0);
         user.setFollowingCount(0);
         userTable.putItem(user);
-
     }
 
+    @Override
     public void updateFolloweeCount(String alias, Integer count) {
         DynamoDbTable<DynamoUser> userTable = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoUser.class));
         Key key = Key.builder()
@@ -62,7 +62,7 @@ public class DynamoUserDAO implements UserDAO {
         userTable.putItem(user);
     }
 
-
+    @Override
     public void updateFollowerCount(String alias, Integer count) {
         DynamoDbTable<DynamoUser> userTable = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoUser.class));
         Key key = Key.builder()
@@ -73,7 +73,30 @@ public class DynamoUserDAO implements UserDAO {
         userTable.putItem(user);
     }
 
+    @Override
+    public int getFollowerCount(String alias) {
+        DynamoDbTable<DynamoUser> userTable = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoUser.class));
+        Key key = Key.builder()
+                .partitionValue(alias)
+                .build();
+        DynamoUser user = userTable.getItem(key);
+        return user.getFollowerCount();
+    }
 
+    @Override
+    public int getFollowingCount(String alias) {
+        DynamoDbTable<DynamoUser> userTable = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoUser.class));
+        Key key = Key.builder()
+                .partitionValue(alias)
+                .build();
+        DynamoUser user = userTable.getItem(key);
+        return user.getFollowingCount();
+    }
+
+
+
+
+    @Override
     public DynamoUser getUser(String alias) {
         DynamoDbTable<DynamoUser> userTable = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoUser.class));
         Key key = Key.builder()
@@ -82,6 +105,7 @@ public class DynamoUserDAO implements UserDAO {
         return userTable.getItem(key);
     }
 
+    @Override
     public User dynamoUserToUser(DynamoUser dynamoUser) {
         return new User(dynamoUser.getFirstName(), dynamoUser.getLastName(), dynamoUser.getAlias(), dynamoUser.getImageUrl());
     }
@@ -102,7 +126,9 @@ public class DynamoUserDAO implements UserDAO {
             for (byte aByte : bytes) {
                 sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
             }
-            return sb.toString();
+            String generatedPassword = sb.toString();
+            System.out.println("generated password: " + generatedPassword);
+            return generatedPassword;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -114,7 +140,9 @@ public class DynamoUserDAO implements UserDAO {
             SecureRandom sr = SecureRandom.getInstance("SHA1PRNG", "SUN");
             byte[] salt = new byte[16];
             sr.nextBytes(salt);
-            return Base64.getEncoder().encodeToString(salt);
+            String saltString = Base64.getEncoder().encodeToString(salt);
+            System.out.println("salt: " + saltString);
+            return saltString;
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             e.printStackTrace();
         }

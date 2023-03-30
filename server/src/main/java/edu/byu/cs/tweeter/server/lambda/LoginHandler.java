@@ -17,12 +17,12 @@ import edu.byu.cs.tweeter.server.service.UserService;
 public class LoginHandler implements RequestHandler<LoginRequest, LoginResponse> {
 
     public static void main(String args[]) {
-        DAOFactory daoFactory = new DynamoFactory();
-        daoFactory.getUserDAO().addUser("@p", "Pearl", "Hulbert", "p", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
-//        LoginRequest loginRequest = new LoginRequest("@p", "p");
-//        LoginHandler loginHandler = new LoginHandler();
-//        LoginResponse loginResponse = loginHandler.handleRequest(loginRequest, null);
-//        System.out.println(loginResponse.getUser().getFirstName());
+//        DAOFactory daoFactory = new DynamoFactory();
+//        daoFactory.getUserDAO().addUser("@p", "Pearl", "Hulbert", "p", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
+        LoginRequest loginRequest = new LoginRequest("@p", "p");
+        LoginHandler loginHandler = new LoginHandler();
+        LoginResponse loginResponse = loginHandler.handleRequest(loginRequest, null);
+        System.out.println(loginResponse.getUser().getFirstName());
     }
 
     @Override

@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 import android.os.Handler;
 import android.util.Log;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FollowerCountRequest;
@@ -29,7 +30,7 @@ public class GetFollowingCountTask extends GetCountTask {
             FollowingCountResponse response = getServerFacade().getFollowingCount(request, URL_PATH);
 
             if (response.isSuccess()) {
-                //System.out.println("GetFollowingCountTask: " + response.getCount());
+                System.out.println("Following:" + response.getCount());
                 return response.getCount();
             }
             else {

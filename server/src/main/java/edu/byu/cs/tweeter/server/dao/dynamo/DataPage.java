@@ -28,7 +28,7 @@ public class DataPage<T> {
         return values;
     }
 
-    public boolean isHasMorePages() {
+    public boolean getHasMorePages() {
         return hasMorePages;
     }
 }

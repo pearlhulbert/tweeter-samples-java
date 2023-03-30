@@ -48,6 +48,7 @@ public class RegisterTask extends AuthenticateTask {
 
             if (response.isSuccess()) {
                 Cache.getInstance().setCurrUser(response.getUser());
+                Cache.getInstance().setCurrUserAuthToken(response.getAuthToken());
                 return new Pair<>(response.getUser(), response.getAuthToken());
             } else {
                 sendFailedMessage(response.getMessage());

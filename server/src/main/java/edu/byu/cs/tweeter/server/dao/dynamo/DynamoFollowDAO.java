@@ -1,7 +1,9 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFollow;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
+import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
@@ -17,7 +19,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class DynamoFollowDAO implements FollowDAO {
@@ -43,7 +44,7 @@ public class DynamoFollowDAO implements FollowDAO {
                 return (value != null && value.length() > 0);
         }
 
-
+        @Override
         public void follow(String followerHandle, String followerName, String followeeHandle, String followeeName) {
                 DynamoDbTable<DynamoFollow> table = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class));
                 Key key = Key.builder()
@@ -85,6 +86,7 @@ public class DynamoFollowDAO implements FollowDAO {
         }
 
 
+        @Override
         public DynamoFollow getFollow(String followerHandle, String followeeHandle) {
                 DynamoDbTable<DynamoFollow> table = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class));
                 Key key = Key.builder()
@@ -93,7 +95,8 @@ public class DynamoFollowDAO implements FollowDAO {
                 return table.getItem(key);
         }
 
-        public void deleteFollow(String followerHandle, String followeeHandle) {
+        @Override
+        public void unFollow(String followerHandle, String followeeHandle) {
                 DynamoDbTable<DynamoFollow> table = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class));
                 Key key = Key.builder()
                         .partitionValue(followerHandle).sortValue(followeeHandle)
@@ -101,6 +104,7 @@ public class DynamoFollowDAO implements FollowDAO {
                 table.deleteItem(key);
         }
 
+        @Override
         public DataPage<DynamoFollow> getFollowees(String followerHandle, int pageSize, String lastFollowee) {
                 DynamoDbTable<DynamoFollow> table = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class));
                 Key key = Key.builder()
@@ -135,6 +139,7 @@ public class DynamoFollowDAO implements FollowDAO {
                 return result;
         }
 
+        @Override
         public DataPage<DynamoFollow> getFollowers(String followeeHandle, int pageSize, String lastFollower) {
                 DynamoDbIndex<DynamoFollow> index = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class)).index(IndexName);
                 Key key = Key.builder()
@@ -167,6 +172,37 @@ public class DynamoFollowDAO implements FollowDAO {
                         });
 
                 return result;
+        }
+
+        @Override
+        public List<User> dataPageToFollowees(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory) {
+                List<User> followers = new ArrayList<>();
+                for(DynamoFollow dynamoFollow : dataPage.getValues()) {
+                        DynamoUser dyanmoUser = daoFactory.getUserDAO().getUser(dynamoFollow.get_followee_handle());
+                        User user = daoFactory.getUserDAO().dynamoUserToUser(dyanmoUser);
+                        followers.add(user);
+                }
+                return followers;
+        }
+
+        @Override
+        public List<User> dataPageToFollowers(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory) {
+                List<User> followers = new ArrayList<>();
+                for(DynamoFollow dynamoFollow : dataPage.getValues()) {
+                        DynamoUser dyanmoUser = daoFactory.getUserDAO().getUser(dynamoFollow.get_follower_handle());
+                        User user = daoFactory.getUserDAO().dynamoUserToUser(dyanmoUser);
+                        followers.add(user);
+                }
+                return followers;
+        }
+
+        @Override
+        public boolean isFollowing(String followerHandle, String followeeHandle) {
+                DynamoFollow follow = getFollow(followerHandle, followeeHandle);
+                if (follow == null) {
+                        return false;
+                }
+                return true;
         }
 
 

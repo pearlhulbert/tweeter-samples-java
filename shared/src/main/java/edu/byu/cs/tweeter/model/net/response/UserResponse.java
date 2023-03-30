@@ -6,6 +6,10 @@ public class UserResponse extends Response {
 
     private User user;
 
+    public UserResponse(String message) {
+        super(false, message);
+    }
+
     public UserResponse(User user) {
         super(true, null);
         this.user = user;

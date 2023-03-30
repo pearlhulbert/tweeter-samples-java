@@ -30,7 +30,7 @@ public class GetFollowingTask extends PageTasks<User> {
         try {
             String targetUserAlias = targetUser == null ? null : targetUser.getAlias();
             String lastFolloweeAlias = lastItem == null ? null : lastItem.getAlias();
-
+            System.out.println("GetFollowingTask: " + targetUserAlias + " " + lastFolloweeAlias);
             FollowingRequest request = new FollowingRequest(authToken, targetUserAlias, limit, lastFolloweeAlias);
             FollowingResponse response = getServerFacade().getFollowees(request, URL_PATH);
 
