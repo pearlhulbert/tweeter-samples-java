@@ -53,9 +53,13 @@ public class UserService {
         else if (registerRequest.getImageUrl() == null) {
             throw new RuntimeException("[Bad Request] Missing a image");
         }
+        AuthToken token = daoFactory.getAuthtokenDAO().createAuthToken(registerRequest.getAlias());
+        if (token == null) {
+            throw new RuntimeException("[Internal Server Error] Could not create auth token");
+        }
 
-        // TODO: Generates dummy data. Replace with a real implementation.
-        return getUserDAO().register(registerRequest);
+        return daoFactory.getUserDAO().register(registerRequest.getFirstName(), registerRequest.getLastName(), registerRequest.getAlias(), registerRequest.getPassword(), registerRequest.getImageUrl(), token);
+
     }
 
     public UserResponse getUser(UserRequest request) {

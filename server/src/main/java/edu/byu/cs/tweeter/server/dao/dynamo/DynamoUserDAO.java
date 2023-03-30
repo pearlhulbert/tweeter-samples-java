@@ -9,6 +9,7 @@ import java.util.Base64;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -143,5 +144,16 @@ public class DynamoUserDAO implements UserDAO {
         } else {
             return new LoginResponse("Incorrect password");
         }
+    }
+
+    @Override
+    public RegisterResponse register(String firstName, String lastName, String alias, String password, String imageUrl, AuthToken authToken) {
+        DynamoUser user = getUser(alias);
+        if (user != null) {
+            return new RegisterResponse("User already exists");
+        }
+        addUser(alias, firstName, lastName, password, imageUrl);
+        User newUser = new User(firstName, lastName, alias, imageUrl);
+        return new RegisterResponse(newUser, authToken);
     }
 }
