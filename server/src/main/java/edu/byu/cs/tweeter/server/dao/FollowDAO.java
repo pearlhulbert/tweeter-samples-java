@@ -17,4 +17,5 @@ public interface FollowDAO {
     boolean isFollowing(String followerHandle, String followeeHandle);
     void unFollow(String followerHandle, String followeeHandle);
     DynamoFollow getFollow(String followerHandle, String followeeHandle);
+    List<String> getFollowerHandles(String alias);
 }

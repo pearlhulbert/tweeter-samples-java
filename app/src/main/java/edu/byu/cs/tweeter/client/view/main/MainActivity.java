@@ -119,8 +119,10 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
                 followButton.setEnabled(false);
                 if (followButton.getText().toString().equals(v.getContext().getString(R.string.following))) {
                     presenter.unfollowUser(selectedUser);
+                    updateSelectedUserFollowingAndFollowers();
                 } else {
                     presenter.followUser(selectedUser);
+                    updateSelectedUserFollowingAndFollowers();
                 }
             }
         });

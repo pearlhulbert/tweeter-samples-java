@@ -7,8 +7,10 @@ import java.util.Map;
 
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.server.dao.FeedDAO;
-import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFollow;
+import edu.byu.cs.tweeter.server.dao.LameStatusDAO;
+import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFeed;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoStatus;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
@@ -27,7 +29,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 public class DynamoFeedDAO implements FeedDAO {
     private static final String TABLE_NAME = "feed";
 
-    private static final String UserAliasAttr = "userAlias";
+    private static final String AliasAttr = "alias";
     private static final String DateAttr = "date";
 
     private DynamoDbTable<DynamoStatus> table = enhancedClient.table(TABLE_NAME,
@@ -47,8 +49,8 @@ public class DynamoFeedDAO implements FeedDAO {
     }
 
     @Override
-    public DataPage<DynamoStatus> getFeed(String userAlias, int pageSize, String lastDate) {
-        DynamoDbTable<DynamoStatus> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoStatus.class));
+    public DataPage<DynamoFeed> getFeed(String userAlias, int pageSize, String lastDate) {
+        DynamoDbTable<DynamoFeed> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoFeed.class));
         Key key = Key.builder()
                 .partitionValue(userAlias)
                 .build();
@@ -60,7 +62,7 @@ public class DynamoFeedDAO implements FeedDAO {
         if(isNonEmptyString(lastDate)) {
             // Build up the Exclusive Start Key (telling DynamoDB where you left off reading items)
             Map<String, AttributeValue> startKey = new HashMap<>();
-            startKey.put(UserAliasAttr, AttributeValue.builder().s(userAlias).build());
+            startKey.put(AliasAttr, AttributeValue.builder().s(userAlias).build());
             startKey.put(DateAttr, AttributeValue.builder().n(lastDate).build());
 
             requestBuilder.exclusiveStartKey(startKey);
@@ -68,12 +70,12 @@ public class DynamoFeedDAO implements FeedDAO {
 
         QueryEnhancedRequest request = requestBuilder.build();
 
-        DataPage<DynamoStatus> result = new DataPage<DynamoStatus>();
+        DataPage<DynamoFeed> result = new DataPage<DynamoFeed>();
 
-        PageIterable<DynamoStatus> pages = table.query(request);
+        PageIterable<DynamoFeed> pages = table.query(request);
         pages.stream()
                 .limit(1)
-                .forEach((Page<DynamoStatus> page) -> {
+                .forEach((Page<DynamoFeed> page) -> {
                     result.setHasMorePages(page.lastEvaluatedKey() != null);
                     page.items().forEach(visit -> result.getValues().add(visit));
                 });
@@ -82,35 +84,25 @@ public class DynamoFeedDAO implements FeedDAO {
     }
 
     @Override
-    public void updateFeed(Status postedStatus) {
-        DynamoDbTable<DynamoStatus> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoStatus.class));
-        Key key = Key.builder()
-                .partitionValue(postedStatus.getUser().getAlias()).sortValue(Long.valueOf(postedStatus.getDate()))
-                .build();
+    public void updateFeed(String alias, Status postedStatus) {
+        DynamoDbTable<DynamoFeed> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoFeed.class));
 
-        // load it if it exists
-        DynamoStatus status = table.getItem(key);
-        if(status != null) {
-            table.updateItem(status);
-        } else {
-            DynamoStatus newStatus = new DynamoStatus();
-            newStatus.setUserAlias(postedStatus.getUser().getAlias());
-            newStatus.setPost(postedStatus.getPost());
-            newStatus.setDate(Long.valueOf(postedStatus.getDate()));
-            newStatus.setMentions(postedStatus.getMentions());
-            newStatus.setUrls(postedStatus.getUrls());
-            table.putItem(newStatus);
-        }
+        Long date = Long.valueOf(postedStatus.getDate());
+        DynamoStatus dynamoStatus = new DynamoStatus(postedStatus.getPost(), postedStatus.getUser().getAlias(), date, postedStatus.getMentions(), postedStatus.getUrls());
+        DynamoFeed dynamoFeed = new DynamoFeed(alias, date, dynamoStatus);
+
+        table.putItem(dynamoFeed);
     }
 
     DynamoStatus getStatus(String userAlias, Long date) {
-        DynamoDbTable<DynamoStatus> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoStatus.class));
+        DynamoDbTable<DynamoFeed> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoFeed.class));
         Key key = Key.builder()
                 .partitionValue(userAlias)
                 .sortValue(date)
                 .build();
 
-        return table.getItem(key);
+        DynamoFeed feed = table.getItem(key);
+        return feed.getStatus();
     }
 
     Status dynamoStatusToStatus(DynamoStatus dynamoStatus, DAOFactory daoFactory) {
@@ -120,10 +112,10 @@ public class DynamoFeedDAO implements FeedDAO {
     }
 
     @Override
-    public List<Status> dataPageToFeed(DataPage<DynamoStatus> dataPage, DAOFactory daoFactory) {
+    public List<Status> dataPageToFeed(DataPage<DynamoFeed> dataPage, DAOFactory daoFactory) {
         List<Status> feed = new ArrayList<>();
-        for(DynamoStatus dynamoFeed : dataPage.getValues()) {
-            DynamoStatus dyanmoStatus = getStatus(dynamoFeed.getUserAlias(), dynamoFeed.getDate());
+        for(DynamoFeed dynamoFeed : dataPage.getValues()) {
+            DynamoStatus dyanmoStatus = getStatus(dynamoFeed.getStatus().getUserAlias(), dynamoFeed.getDate());
             Status status = dynamoStatusToStatus(dyanmoStatus, daoFactory);
             feed.add(status);
         }

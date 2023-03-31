@@ -13,11 +13,11 @@ public class IsFollowerResponse extends Response {
         this.isFollower = isFollower;
     }
 
-    public boolean isFollower() {
+    public boolean isIsFollower() {
         return isFollower;
     }
 
-    public void setFollower(boolean follower) {
-        isFollower = follower;
+    public void setIsFollower(boolean isFollower) {
+        this.isFollower = isFollower;
     }
 }

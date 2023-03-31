@@ -125,7 +125,7 @@ public class MainPresenter {
         @Override
         public void handleSuccess(Boolean param) {
             view.updateRelationship(param);
-            view.updateButton(true);
+            //view.updateButton(true);
             view.setButton(true);
         }
     }
@@ -178,9 +178,9 @@ public class MainPresenter {
         }
 
         @Override
-        public void handleSuccess(int count) {
-            view.updateFolloweeCount(count);
-            view.updateFollowerCount(count);
+        public void handleSuccess(int followerCount, int followingCount) {
+            view.updateFolloweeCount(followingCount);
+            view.updateFollowerCount(followerCount);
         }
 
         @Override

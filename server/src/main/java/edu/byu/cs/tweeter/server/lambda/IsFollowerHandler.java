@@ -27,7 +27,7 @@ public class IsFollowerHandler implements RequestHandler<IsFollowerRequest, IsFo
         IsFollowerRequest isFollowerRequest = new IsFollowerRequest(user1, loginResponse.getAuthToken(), user2);
         IsFollowerHandler isFollowerHandler = new IsFollowerHandler();
         IsFollowerResponse isFollowerResponse = isFollowerHandler.handleRequest(isFollowerRequest, null);
-        System.out.println("follower: " + isFollowerResponse.isFollower());
+        System.out.println("follower: " + isFollowerResponse.isIsFollower());
     }
     @Override
     public IsFollowerResponse handleRequest(IsFollowerRequest request, Context context) {

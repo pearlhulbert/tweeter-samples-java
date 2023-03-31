@@ -82,8 +82,10 @@ public class FollowService {
         if (!isValidToken) {
             return new FollowResponse("Invalid auth token, user no longer active");
         }
+        String followeeAlias = request.getFollowee().getAlias();
         DynamoUser follower = daoFactory.getUserDAO().getUser(daoFactory.getAuthtokenDAO().getAuthToken(request.getAuthToken()).getUserAlias());
-        if (daoFactory.getFollowDAO().isFollowing(request.getFollowee().getAlias(), follower.getAlias())) {
+        String followerAlias = follower.getAlias();
+        if (daoFactory.getFollowDAO().isFollowing(follower.getAlias(), followeeAlias)) {
             return new FollowResponse("Already following");
         }
         String followerName = follower.getFirstName() + " " + follower.getLastName();
@@ -106,10 +108,10 @@ public class FollowService {
             return new UnFollowResponse("Invalid auth token, user no longer active");
         }
         DynamoUser follower = daoFactory.getUserDAO().getUser(daoFactory.getAuthtokenDAO().getAuthToken(request.getAuthToken()).getUserAlias());
-        if (!daoFactory.getFollowDAO().isFollowing(request.getFollowee().getAlias(), follower.getAlias())) {
+        if (!daoFactory.getFollowDAO().isFollowing(follower.getAlias(), request.getFollowee().getAlias())) {
             return new UnFollowResponse("Not following");
         }
-        daoFactory.getFollowDAO().unFollow(request.getFollowee().getAlias(), follower.getAlias());
+        daoFactory.getFollowDAO().unFollow(follower.getAlias(), request.getFollowee().getAlias());
         if (daoFactory.getFollowDAO().getFollow(follower.getAlias(), request.getFollowee().getAlias()) != null) {
             return new UnFollowResponse("Failed to unfollow");
         }

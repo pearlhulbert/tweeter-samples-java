@@ -11,6 +11,7 @@ import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.model.net.response.StoryResponse;
 import edu.byu.cs.tweeter.server.dao.LameStatusDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.DataPage;
+import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFeed;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoStatus;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 
@@ -26,23 +27,26 @@ public class StatusService {
         this.daoFactory = null;
     }
 
+    LameStatusDAO getLameStatusDAO() {
+        return new LameStatusDAO();
+    }
+
     public FeedResponse getFeed(FeedRequest request) {
         if (request.getUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a user alias");
         }
-        // build and print json string
-        // delete get-followees and rebuild then see if makes difference
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit" + request.getLimit());
         }
-        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
-        if (!isValidToken) {
-            return new FeedResponse("Invalid auth token, user no longer active");
-        }
-
-        DataPage<DynamoStatus> dFeed = daoFactory.getFeedDAO().getFeed(request.getUserAlias(), request.getLimit(), request.getLastStatus().getDate());
-        List<Status> feed = daoFactory.getFeedDAO().dataPageToFeed(dFeed, daoFactory);
-        return new FeedResponse(feed, dFeed.getHasMorePages());
+//        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+//        if (!isValidToken) {
+//            return new FeedResponse("Invalid auth token, user no longer active");
+//        }
+//
+//        DataPage<DynamoFeed> dFeed = daoFactory.getFeedDAO().getFeed(request.getUserAlias(), request.getLimit(), request.getLastStatus().getDate());
+//        List<Status> feed = daoFactory.getFeedDAO().dataPageToFeed(dFeed, daoFactory);
+//        return new FeedResponse(feed, dFeed.getHasMorePages());
+        return getLameStatusDAO().getFeed(request);
     }
 
     public StoryResponse getStory(StoryRequest request) {
@@ -52,17 +56,14 @@ public class StatusService {
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
-        if (!isValidToken) {
-            return new StoryResponse("Invalid auth token, user no longer active");
-        }
-        DataPage<DynamoStatus> dStory = daoFactory.getFeedDAO().getFeed(request.getUserAlias(), request.getLimit(), request.getLastStatus().getDate());
-        List<Status> story = daoFactory.getFeedDAO().dataPageToFeed(dStory, daoFactory);
-        return new StoryResponse(story, dStory.getHasMorePages());
-    }
-
-    LameStatusDAO getStatusDAO() {
-        return new LameStatusDAO();
+//        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+//        if (!isValidToken) {
+//            return new StoryResponse("Invalid auth token, user no longer active");
+//        }
+//        DataPage<DynamoStatus> dStory = daoFactory.getStoryDAO().getStory(request.getUserAlias(), request.getLimit(), request.getLastStatus().getDate());
+//        List<Status> story = daoFactory.getStoryDAO().dataPageToStory(dStory, daoFactory);
+//        return new StoryResponse(story, dStory.getHasMorePages());
+        return getLameStatusDAO().getStory(request);
     }
 
     public PostStatusResponse postStatus(PostStatusRequest request) {
@@ -77,12 +78,13 @@ public class StatusService {
         if (!posted) {
             return new PostStatusResponse("Failed to post status");
         }
-        daoFactory.getFollowDAO().getFollowers(request.getStatus().getUser().getAlias(), ).forEach(follower -> {
-            daoFactory.getFeedDAO().updateFeed(request.getStatus());
+
+        List<String> followers = daoFactory.getFollowDAO().getFollowerHandles(request.getStatus().getUser().getAlias());
+        for (String follower : followers) {
+            daoFactory.getFeedDAO().updateFeed(follower, request.getStatus());
         }
 
         return new PostStatusResponse();
-
     }
 
 

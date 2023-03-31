@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
@@ -13,17 +14,20 @@ import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 /**
  * Background task that queries how many followers a user has.
  */
-public class GetFollowersCountTask extends GetCountTask {
+public class GetFollowersCountTask extends AuthenticatedTask {
 
     private static final String LOG_TAG = "GetFollowerCountTask";
     private static final String URL_PATH = "/getfollowercount";
+    public static final String FOLLOWER_COUNT_KEY = "follower-count";
+    private int followerCount;
+    protected User targetUser;
 
     public GetFollowersCountTask(AuthToken authToken, User targetUser, Handler messageHandler) {
-        super(authToken, targetUser, messageHandler);
+        super(authToken, messageHandler);
+        this.targetUser = targetUser;
     }
 
-    @Override
-    protected int runCountTask() {
+    private int runCountTask() {
         try {
             FollowerCountRequest request = new FollowerCountRequest(targetUser, authToken);
             FollowerCountResponse response = getServerFacade().getFollowerCount(request, URL_PATH);
@@ -41,4 +45,15 @@ public class GetFollowersCountTask extends GetCountTask {
         }
         return 0;
     }
+    @Override
+    protected void processTask() {
+        this.followerCount = runCountTask();
+    }
+
+
+    @Override
+    protected void loadSuccessBundle(Bundle msgBundle) {
+        msgBundle.putInt(FOLLOWER_COUNT_KEY, followerCount);
+    }
+
 }

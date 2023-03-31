@@ -205,5 +205,34 @@ public class DynamoFollowDAO implements FollowDAO {
                 return true;
         }
 
+        @Override
+        public List<String> getFollowerHandles(String alias) {
+                DynamoDbIndex<DynamoFollow> index = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class)).index(IndexName);
+                Key key = Key.builder()
+                        .partitionValue(alias)
+                        .build();
+
+                QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                        .queryConditional(QueryConditional.keyEqualTo(key))
+                        .build();
+
+                DataPage<DynamoFollow> result = new DataPage<DynamoFollow>();
+
+                SdkIterable<Page<DynamoFollow>> sdkIterable = index.query(request);
+                PageIterable<DynamoFollow> pages = PageIterable.create(sdkIterable);
+                pages.stream()
+                        .limit(1)
+                        .forEach((Page<DynamoFollow> page) -> {
+                                result.setHasMorePages(page.lastEvaluatedKey() != null);
+                                page.items().forEach(visit -> result.getValues().add(visit));
+                        });
+
+                List<String> aliases = new ArrayList<>();
+                for(DynamoFollow dynamoFollow : result.getValues()) {
+                        aliases.add(dynamoFollow.get_follower_handle());
+                }
+                return aliases;
+        }
+
 
 }
