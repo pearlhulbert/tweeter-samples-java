@@ -27,7 +27,6 @@ public class DynamoStatus {
         this.mentions = mentions;
     }
 
-    @DynamoDbAttribute("post")
     public String getPost() {
         return post;
     }
@@ -56,7 +55,6 @@ public class DynamoStatus {
         this.date = date;
     }
 
-    @DynamoDbAttribute("urls")
     public List<String> getUrls() {
         return urls;
     }
@@ -65,7 +63,6 @@ public class DynamoStatus {
         this.urls = urls;
     }
 
-    @DynamoDbAttribute("mentions")
     public List<String> getMentions() {
         return mentions;
     }

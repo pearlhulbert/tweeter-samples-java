@@ -43,6 +43,7 @@ public class RegisterTask extends AuthenticateTask {
     @Override
     protected Pair<User, AuthToken> authenticateUser() {
         try {
+            this.image = "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png";
             RegisterRequest request = new RegisterRequest(firstName, lastName, alias, password, image);
             RegisterResponse response = getServerFacade().register(request, URL_PATH);
 

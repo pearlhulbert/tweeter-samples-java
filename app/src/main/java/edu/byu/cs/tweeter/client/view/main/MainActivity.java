@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
             followButton.setBackgroundColor(getResources().getColor(R.color.white));
             followButton.setTextColor(getResources().getColor(R.color.lightGray));
         } else {
-            followButton.setText(R.string.follow);
+            followButton.setText("Follow");
             followButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         }
     }

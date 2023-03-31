@@ -34,9 +34,6 @@ public class FollowService {
         this.daoFactory = daoFactory;
     }
 
-    public FollowService() {
-        this.daoFactory = null;
-    }
     /**
      * Returns the users that the user specified in the request is following. Uses information in
      * the request object to limit the number of followees returned and to return the next set of
@@ -144,17 +141,6 @@ public class FollowService {
         }
         int count = daoFactory.getUserDAO().getFollowerCount(request.getTargetUser().getAlias());
         return new FollowerCountResponse(count);
-    }
-
-    /**
-     * Returns an instance of {@link LameFollowDAO}. Allows mocking of the FollowDAO class
-     * for testing purposes. All usages of FollowDAO should get their FollowDAO
-     * instance from this method to allow for mocking of the instance.
-     *
-     * @return the instance.
-     */
-    LameFollowDAO getFollowingDAO() {
-        return new LameFollowDAO();
     }
 
     public IsFollowerResponse isFollowing(IsFollowerRequest request) {
