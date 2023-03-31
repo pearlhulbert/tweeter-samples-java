@@ -92,7 +92,8 @@ public class DynamoFollowDAO implements FollowDAO {
                 Key key = Key.builder()
                         .partitionValue(followerHandle).sortValue(followeeHandle)
                         .build();
-                return table.getItem(key);
+                DynamoFollow follow = table.getItem(key);
+                return follow;
         }
 
         @Override

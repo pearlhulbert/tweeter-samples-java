@@ -99,7 +99,7 @@ public class MainPresenter {
         @Override
         public void handleSuccess(Boolean param) {
             view.updateRelationship(param);
-            //view.updateButton(false);
+            //view.updateButton(param);
             view.setButton(true);
         }
     }
