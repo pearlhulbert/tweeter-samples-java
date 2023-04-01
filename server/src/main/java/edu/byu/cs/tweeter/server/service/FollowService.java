@@ -95,7 +95,9 @@ public class FollowService {
         }
         DynamoUser followee = daoFactory.getUserDAO().getUser(request.getFollowee().getAlias());
         daoFactory.getUserDAO().updateFolloweeCount(follower.getAlias(), follower.getFollowingCount() + 1);
+        int count1 = follower.getFollowingCount();
         daoFactory.getUserDAO().updateFollowerCount(followee.getAlias(), followee.getFollowerCount() + 1);
+        int count2 = followee.getFollowerCount();
         return new FollowResponse();
     }
 
@@ -117,7 +119,9 @@ public class FollowService {
         }
         DynamoUser followee = daoFactory.getUserDAO().getUser(request.getFollowee().getAlias());
         daoFactory.getUserDAO().updateFolloweeCount(follower.getAlias(), follower.getFollowingCount() - 1);
+        int count1 = follower.getFollowingCount();
         daoFactory.getUserDAO().updateFollowerCount(followee.getAlias(), followee.getFollowerCount() - 1);
+        int count2 = followee.getFollowerCount();
         return new UnFollowResponse();
     }
 

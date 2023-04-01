@@ -54,7 +54,7 @@ public class MainPresenter {
     }
 
     public void getCounts(User selectedUser) {
-        followService.getCounts(selectedUser, new CountObserver());
+        followService.getCounts(selectedUser, new FollowersCountObserver(), new FollowingCountObserver());
     }
 
     public interface MainView extends View {
@@ -166,21 +166,34 @@ public class MainPresenter {
         }
     }
 
-    private class CountObserver implements FollowService.CountingObserver {
+    private class FollowersCountObserver implements FollowService.FollowersCountObserver {
        @Override
         public void updateFollowersCount(int count) {
             view.updateFollowerCount(count);
         }
 
+
         @Override
-        public void updateFolloweeCount(int count) {
-            view.updateFolloweeCount(count);
+        public void handleSuccess(int count) {
+            updateFollowersCount(count);
         }
 
         @Override
-        public void handleSuccess(int followerCount, int followingCount) {
-            view.updateFolloweeCount(followingCount);
-            view.updateFollowerCount(followerCount);
+        public void displayMessage(String message) {
+            view.displayMessage(message);
+        }
+    }
+
+    private class FollowingCountObserver implements FollowService.FollowingCountObserver {
+        @Override
+        public void updateFolloweeCount(int count) {
+            view.updateFollowerCount(count);
+        }
+
+
+        @Override
+        public void handleSuccess(int count) {
+            updateFolloweeCount(count);
         }
 
         @Override

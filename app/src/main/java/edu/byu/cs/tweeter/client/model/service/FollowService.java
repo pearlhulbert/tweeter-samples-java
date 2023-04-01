@@ -36,9 +36,12 @@ public class FollowService extends Service {
     public interface PageObserver extends PageTaskObserver<User> {
     }
 
-    public interface CountingObserver extends CountObserver {
-        void updateFollowersCount(int count);
+    public interface FollowingCountObserver extends CountObserver {
         void updateFolloweeCount(int count);
+    }
+
+    public interface FollowersCountObserver extends CountObserver {
+        void updateFollowersCount(int count);
     }
 
     public interface RelObserver extends SingleObserver<Boolean> {
@@ -70,18 +73,19 @@ public class FollowService extends Service {
        utils.runTask(followTask);
     }
 
-    public void getCounts(User selectedUser, CountObserver observer) {
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+    public void getCounts(User selectedUser, CountObserver observer, CountObserver observer2) {
+        //ExecutorService executor = Executors.newFixedThreadPool(2);
 
-        // Get count of most recently selected user's followers.
-        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
-                selectedUser, new GetFollowersCountHandler(observer));
-        executor.execute(followersCountTask);
+        // Get count of most recently selected user's followers
 
         // Get count of most recently selected user's followees (who they are following)
         GetFollowingCountTask followingCountTask = new GetFollowingCountTask(Cache.getInstance().getCurrUserAuthToken(),
-                selectedUser, new GetFollowingCountHandler(observer));
-        executor.execute(followingCountTask);
+                selectedUser, new GetFollowingCountHandler(observer2));
+        utils.runTask(followingCountTask);
+
+        GetFollowersCountTask followersCountTask = new GetFollowersCountTask(Cache.getInstance().getCurrUserAuthToken(),
+                selectedUser, new GetFollowersCountHandler(observer));
+        utils.runTask(followersCountTask);
 
     }
 

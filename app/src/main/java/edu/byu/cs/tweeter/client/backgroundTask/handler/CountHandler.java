@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.client.backgroundTask.handler;
 
 import android.os.Message;
 
+import edu.byu.cs.tweeter.client.backgroundTask.GetCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.observer.CountObserver;
@@ -14,8 +15,8 @@ public abstract class CountHandler extends BackgroundTaskHandler<CountObserver> 
 
     @Override
     protected void handleSuccess(Message data, CountObserver observer) {
-        int followerCount = data.getData().getInt(GetFollowersCountTask.FOLLOWER_COUNT_KEY);
-        int followingCount = data.getData().getInt(GetFollowingCountTask.FOLLOWING_COUNT_KEY);
-        observer.handleSuccess(followerCount, followingCount);
+        int count = data.getData().getInt(GetCountTask.COUNT_KEY);
+        observer.handleSuccess(count);
     }
+
 }
