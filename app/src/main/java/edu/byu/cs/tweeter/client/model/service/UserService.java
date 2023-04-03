@@ -43,9 +43,9 @@ public class UserService extends Service {
     public interface UObserver extends SingleObserver<User> {
     }
 
-    public void loadUser(TextView userAlias, UObserver observer) {
+    public void loadUser(String userAlias, UObserver observer) {
         GetUserTask getUserTask = new GetUserTask(Cache.getInstance().getCurrUserAuthToken(),
-                userAlias.getText().toString(), new GetUserHandler(observer));
+                userAlias, new GetUserHandler(observer));
         utils.runTask(getUserTask);
         observer.displayMessage("Getting user's profile...");
     }

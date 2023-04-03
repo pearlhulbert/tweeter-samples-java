@@ -21,6 +21,7 @@ dependencies {
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version: '1.9.0'
     implementation group: 'software.amazon.awssdk', name: 'dynamodb', version: '2.20.31'
     implementation group: 'software.amazon.awssdk', name: 'dynamodb-enhanced', version: '2.20.31'
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.440'
 
     // Testing related dependencies
 

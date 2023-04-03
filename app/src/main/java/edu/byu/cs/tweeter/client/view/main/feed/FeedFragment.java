@@ -148,7 +148,7 @@ public class FeedFragment extends Fragment implements PagedPresenter.PageView<St
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    presenter.loadUser(userAlias);
+                    presenter.loadUser(userAlias.getText().toString());
                 }
             });
         }
@@ -178,7 +178,7 @@ public class FeedFragment extends Fragment implements PagedPresenter.PageView<St
                         int end = s.getSpanEnd(this);
 
                         String clickable = s.subSequence(start, end).toString();
-                        presenter.loadUser(userAlias);
+                        presenter.loadUser(clickable);
                     }
 
                     @Override

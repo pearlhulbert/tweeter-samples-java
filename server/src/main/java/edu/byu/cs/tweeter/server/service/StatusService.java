@@ -38,15 +38,20 @@ public class StatusService {
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit" + request.getLimit());
         }
-//        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
-//        if (!isValidToken) {
-//            return new FeedResponse("Invalid auth token, user no longer active");
-//        }
-//
-//        DataPage<DynamoFeed> dFeed = daoFactory.getFeedDAO().getFeed(request.getUserAlias(), request.getLimit(), request.getLastStatus().getDate());
-//        List<Status> feed = daoFactory.getFeedDAO().dataPageToFeed(dFeed, daoFactory);
-//        return new FeedResponse(feed, dFeed.getHasMorePages());
-        return getLameStatusDAO().getFeed(request);
+        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+        if (!isValidToken) {
+            return new FeedResponse("Invalid auth token, user no longer active");
+        }
+        String date = "";
+        if (request.getLastStatus() != null) {
+            date = request.getLastStatus().getDate();
+        } else {
+            date = null;
+        }
+        DataPage<DynamoFeed> dFeed = daoFactory.getFeedDAO().getFeed(request.getUserAlias(), request.getLimit(), null);
+        List<Status> feed = daoFactory.getFeedDAO().dataPageToFeed(dFeed, daoFactory);
+        return new FeedResponse(feed, dFeed.getHasMorePages());
+        //return getLameStatusDAO().getFeed(request);
     }
 
     public StoryResponse getStory(StoryRequest request) {
@@ -56,14 +61,20 @@ public class StatusService {
         if (request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-//        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
-//        if (!isValidToken) {
-//            return new StoryResponse("Invalid auth token, user no longer active");
-//        }
-//        DataPage<DynamoStatus> dStory = daoFactory.getStoryDAO().getStory(request.getUserAlias(), request.getLimit(), request.getLastStatus().getDate());
-//        List<Status> story = daoFactory.getStoryDAO().dataPageToStory(dStory, daoFactory);
-//        return new StoryResponse(story, dStory.getHasMorePages());
-        return getLameStatusDAO().getStory(request);
+        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+        if (!isValidToken) {
+            return new StoryResponse("Invalid auth token, user no longer active");
+        }
+        String date = "";
+        if (request.getLastStatus() != null) {
+            date = request.getLastStatus().getDate();
+        } else {
+            date = null;
+        }
+        DataPage<DynamoStatus> dStory = daoFactory.getStoryDAO().getStory(request.getUserAlias(), request.getLimit(), date);
+        List<Status> story = daoFactory.getStoryDAO().dataPageToStory(dStory, daoFactory);
+        return new StoryResponse(story, dStory.getHasMorePages());
+        //return getLameStatusDAO().getStory(request);
     }
 
     public PostStatusResponse postStatus(PostStatusRequest request) {

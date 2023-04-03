@@ -115,7 +115,7 @@ public class DynamoFeedDAO implements FeedDAO {
     public List<Status> dataPageToFeed(DataPage<DynamoFeed> dataPage, DAOFactory daoFactory) {
         List<Status> feed = new ArrayList<>();
         for(DynamoFeed dynamoFeed : dataPage.getValues()) {
-            DynamoStatus dyanmoStatus = getStatus(dynamoFeed.getStatus().getUserAlias(), dynamoFeed.getDate());
+            DynamoStatus dyanmoStatus = getStatus(dynamoFeed.getAlias(), dynamoFeed.getDate());
             Status status = dynamoStatusToStatus(dyanmoStatus, daoFactory);
             feed.add(status);
         }

@@ -57,13 +57,15 @@ public class UserService {
             throw new RuntimeException("[Bad Request] Missing a last name");
         }
         else if (registerRequest.getImageUrl() == null) {
-            throw new RuntimeException("[Bad Request] Missing a image");
+            throw new RuntimeException("[Bad Request] Missing an image");
         }
         AuthToken token = daoFactory.getAuthtokenDAO().createAuthToken(registerRequest.getAlias());
         if (token == null) {
             throw new RuntimeException("[Internal Server Error] Could not create auth token");
         }
         daoFactory.getAuthtokenDAO().addToken(token, registerRequest.getAlias());
+        String link = daoFactory.getImageDAO().addImage(registerRequest.getAlias(), registerRequest.getImageUrl());
+        registerRequest.setImageUrl(link);
         return daoFactory.getUserDAO().register(registerRequest.getFirstName(), registerRequest.getLastName(), registerRequest.getAlias(), registerRequest.getPassword(), registerRequest.getImageUrl(), token);
     }
 

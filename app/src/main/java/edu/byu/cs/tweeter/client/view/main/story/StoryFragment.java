@@ -154,7 +154,7 @@ public class StoryFragment extends Fragment implements PagedPresenter.PageView<S
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    presenter.loadUser(userAlias);
+                    presenter.loadUser(userAlias.getText().toString());
                 }
             });
         }
@@ -185,7 +185,7 @@ public class StoryFragment extends Fragment implements PagedPresenter.PageView<S
 
                         String clickable = s.subSequence(start, end).toString();
 
-                        presenter.loadUser(userAlias);
+                        presenter.loadUser(clickable);
                     }
 
                     @Override

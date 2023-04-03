@@ -44,7 +44,7 @@ public abstract class PagedPresenter<T> {
                 }
         }
 
-        public void loadUser(TextView userAlias) {
+        public void loadUser(String userAlias) {
                 userService.loadUser(userAlias, new GetUserObserver());
         }
 

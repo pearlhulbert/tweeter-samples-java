@@ -142,7 +142,7 @@ public class FollowingFragment extends Fragment implements PagedPresenter.PageVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    presenter.loadUser(userAlias);
+                    presenter.loadUser(userAlias.getText().toString());
                 }
             });
         }
