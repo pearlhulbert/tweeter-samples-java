@@ -83,4 +83,11 @@ public class DynamoAuthtokenDAO implements AuthtokenDAO {
         return table.getItem(key);
     }
 
+    @Override
+    public void logout(AuthToken token) {
+        String tokenString = token.getToken();
+        Key key = Key.builder().partitionValue(tokenString).build();
+        table.deleteItem(key);
+    }
+
 }

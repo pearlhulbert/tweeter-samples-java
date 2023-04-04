@@ -9,4 +9,5 @@ public interface AuthtokenDAO {
     void addToken(AuthToken token, String alias);
     AuthToken createAuthToken(String username);
     DynamoAuthToken getAuthToken(AuthToken token);
+    void logout(AuthToken token);
 }

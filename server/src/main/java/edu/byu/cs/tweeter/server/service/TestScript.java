@@ -38,27 +38,48 @@ public class TestScript {
         FeedDAO feedDAO = factory.getFeedDAO();
         StoryDAO storyDAO = factory.getStoryDAO();
 
-//        udao.addUser("@user1", "User", "1", "password", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
-//        udao.addUser("@user2", "User", "2", "password", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
-//        udao.addUser("@p", "Pearl", "Hulbert", "p", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
-//        fdao.follow("@user1", "User 1", "@p", "Pearl Hulbert");
-//        fdao.follow("@user2", "User 2", "@p", "Pearl Hulbert");
-//        fdao.follow("@p", "Pearl Hulbert", "@user1", "User 1");
-//        udao.updateFollowerCount("@p", 1);
-//        udao.updateFolloweeCount("@p", 1);
-//        udao.updateFollowerCount("@user1", 1);
-//        udao.updateFolloweeCount("@user2", 1);
+        udao.addUser("@p", "Pearl", "Hulbert", "p", "https://image-tweeter-bucket.s3.us-west-2.amazonaws.com/IMG_9488.jpg");
 
-        User user = new User ("User", "1", "@user1", "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/donald_duck.png");
-        Timestamp date = new Timestamp(System.currentTimeMillis());
-        String dateStr = String.valueOf(date.getTime());
-        List<String> test = new ArrayList<>();
-        feedDAO.updateFeed("@user1", new Status("This is a test status", user, dateStr, test, test));
-        storyDAO.postStatus(new Status("This is a test status", user, dateStr, test, test));
+
+        for(int i = 0; i < 20; i++){
+            String alias = "@daffy" + i;
+            String firstName = "Daffy" + i;
+            String lastName = "Duck" + i;
+            String url2 = "https://image-tweeter-bucket.s3.us-west-2.amazonaws.com/baby-grand-brown.jpg";
+            udao.addUser(alias, firstName, lastName, "password" + i, url2);
+            fdao.follow("@p", "Pearl Hulbert", alias, firstName + " " + lastName);
+        }
+
+        for (int i = 0; i < 20; ++i) {
+            String alias = "@minnie" + i;
+            String firstName = "Minnie" + i;
+            String lastName = "Mouse" + i;
+            String url2 = "https://image-tweeter-bucket.s3.us-west-2.amazonaws.com/play-bass.png";
+            udao.addUser(alias, firstName, lastName, "password" + i, url2);
+            fdao.follow(alias, firstName + " " + lastName, "@p", "Pearl Hulbert");
+        }
+
+        for(int i = 0; i < 20; i++){
+            String alias = "@daffy" + i;
+            String firstName = "Daffy" + i;
+            String lastName = "Duck" + i;
+            User user3 = udao.dynamoUserToUser(udao.getUser(alias));
+            storyDAO.postStatus(new Status("This is a test status", user3, String.valueOf(new Timestamp(System.currentTimeMillis()).getTime()), new ArrayList<>(), new ArrayList<>()));
+        }
+
+        for (int i = 0; i < 20; ++i) {
+            User user3 = udao.dynamoUserToUser(udao.getUser("@p"));
+            storyDAO.postStatus(new Status("This is test status " + i, user3, String.valueOf(new Timestamp(System.currentTimeMillis()).getTime()), new ArrayList<>(), new ArrayList<>()));
+        }
+
+        for (int i = 0; i < 20; ++i) {
+            String alias = "@minnie" + i;
+            String firstName = "Minnie" + i;
+            String lastName = "Mouse" + i;
+            User user3 = udao.dynamoUserToUser(udao.getUser(alias));
+            feedDAO.updateFeed("@p", new Status("This is a test status", user3, String.valueOf(new Timestamp(System.currentTimeMillis()).getTime()), new ArrayList<>(), new ArrayList<>()));
+        }
+
     }
-
-
-
-
 
 }

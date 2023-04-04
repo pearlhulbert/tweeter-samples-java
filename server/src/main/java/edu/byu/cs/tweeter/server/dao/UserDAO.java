@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
 
 public interface UserDAO {
 
-    LoginResponse login(String username, String password, AuthToken authToken);
+    User login(String username, String password, AuthToken authToken);
     RegisterResponse register(String firstName, String lastName, String alias, String password, String imageUrl, AuthToken authToken);
     void addUser(String alias, String firstName, String lastName, String password, String url);
     DynamoUser getUser(String alias);

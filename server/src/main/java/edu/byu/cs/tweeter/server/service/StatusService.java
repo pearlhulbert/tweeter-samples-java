@@ -51,7 +51,6 @@ public class StatusService {
         DataPage<DynamoFeed> dFeed = daoFactory.getFeedDAO().getFeed(request.getUserAlias(), request.getLimit(), null);
         List<Status> feed = daoFactory.getFeedDAO().dataPageToFeed(dFeed, daoFactory);
         return new FeedResponse(feed, dFeed.getHasMorePages());
-        //return getLameStatusDAO().getFeed(request);
     }
 
     public StoryResponse getStory(StoryRequest request) {

@@ -1,6 +1,7 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
+import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFollow;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
@@ -62,6 +63,11 @@ public class DynamoFollowDAO implements FollowDAO {
                         newFollow.set_followee_handle(followeeHandle);
                         newFollow.set_followee_name(followeeName);
                         table.putItem(newFollow);
+                        UserDAO userDAO = new DynamoUserDAO();
+                        DynamoUser followee = userDAO.getUser(followeeHandle);
+                        DynamoUser follower = userDAO.getUser(followerHandle);
+                        userDAO.updateFolloweeCount(follower.getAlias(), follower.getFollowingCount() + 1);
+                        userDAO.updateFollowerCount(followee.getAlias(), followee.getFollowerCount() + 1);
                 }
         }
 
@@ -103,6 +109,11 @@ public class DynamoFollowDAO implements FollowDAO {
                         .partitionValue(followerHandle).sortValue(followeeHandle)
                         .build();
                 table.deleteItem(key);
+                UserDAO userDAO = new DynamoUserDAO();
+                DynamoUser followee = userDAO.getUser(followeeHandle);
+                DynamoUser follower = userDAO.getUser(followerHandle);
+                userDAO.updateFolloweeCount(follower.getAlias(), follower.getFollowingCount() - 1);
+                userDAO.updateFollowerCount(followee.getAlias(), followee.getFollowerCount() - 1);
         }
 
         @Override

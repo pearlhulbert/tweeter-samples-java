@@ -6,6 +6,7 @@ import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.request.UserRequest;
+import edu.byu.cs.tweeter.model.net.response.FeedResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
@@ -38,7 +39,8 @@ public class UserService {
             throw new RuntimeException("[Internal Server Error] Could not create auth token");
         }
         daoFactory.getAuthtokenDAO().addToken(token, request.getUsername());
-        LoginResponse response = daoFactory.getUserDAO().login(request.getUsername(), request.getPassword(), token);
+        User user = daoFactory.getUserDAO().login(request.getUsername(), request.getPassword(), token);
+        LoginResponse response = new  LoginResponse(user, token);
         System.out.println(response.getMessage());
         return response;
     }
@@ -83,7 +85,12 @@ public class UserService {
     }
 
     public LogoutResponse logout(LogoutRequest request) {
-        return getUserDAO().logout(request);
+        boolean isValidToken = daoFactory.getAuthtokenDAO().isValidToken(request.getAuthToken());
+        if (!isValidToken) {
+            return new LogoutResponse("Invalid auth token, user no longer active");
+        }
+        daoFactory.getAuthtokenDAO().logout(request.getAuthToken());
+        return new LogoutResponse();
     }
 
     LameUserDAO getUserDAO() {

@@ -127,7 +127,6 @@ public class DynamoUserDAO implements UserDAO {
                 sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
             }
             String generatedPassword = sb.toString();
-            System.out.println("generated password: " + generatedPassword);
             return generatedPassword;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -141,7 +140,6 @@ public class DynamoUserDAO implements UserDAO {
             byte[] salt = new byte[16];
             sr.nextBytes(salt);
             String saltString = Base64.getEncoder().encodeToString(salt);
-            System.out.println("salt: " + saltString);
             return saltString;
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             e.printStackTrace();
@@ -161,16 +159,16 @@ public class DynamoUserDAO implements UserDAO {
 
 
     @Override
-    public LoginResponse login(String username, String password, AuthToken authToken) {
+    public User login(String username, String password, AuthToken authToken) {
         DynamoUser user = getUser(username);
         if (user == null) {
-            return new LoginResponse("User not found");
+            return null;
         }
         String hashedPassword = hashPassword(password, user.getSalt());
         if (hashedPassword.equals(user.getSecurePassword())) {
-            return new LoginResponse(dynamoUserToUser(user), authToken);
+            return dynamoUserToUser(user);
         } else {
-            return new LoginResponse("Incorrect password");
+            throw new RuntimeException("Invalid password");
         }
     }
 
