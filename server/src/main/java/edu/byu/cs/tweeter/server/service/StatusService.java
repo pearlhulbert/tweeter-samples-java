@@ -1,5 +1,12 @@
 package edu.byu.cs.tweeter.server.service;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -14,6 +21,7 @@ import edu.byu.cs.tweeter.server.dao.dynamo.DataPage;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFeed;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoStatus;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
+import edu.byu.cs.tweeter.server.service.domain.PostStatus;
 
 public class StatusService {
 
@@ -76,6 +84,21 @@ public class StatusService {
         //return getLameStatusDAO().getStory(request);
     }
 
+    public void sendStatusMessage(Status status) {
+
+        String messageBody = new Gson().toJson(status);
+        String queueUrl = "https://sqs.us-west-2.amazonaws.com/063112404896/TweeterPostStatusQueue";
+
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageBody(messageBody);
+
+        AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+        SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+        String msgId = send_msg_result.getMessageId();
+        System.out.println("Message ID: " + msgId);
+    }
+
     public PostStatusResponse postStatus(PostStatusRequest request) {
         if (request.getStatus() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a status");
@@ -89,10 +112,7 @@ public class StatusService {
             return new PostStatusResponse("Failed to post status");
         }
 
-        List<String> followers = daoFactory.getFollowDAO().getFollowerHandles(request.getStatus().getUser().getAlias());
-        for (String follower : followers) {
-            daoFactory.getFeedDAO().updateFeed(follower, request.getStatus());
-        }
+        sendStatusMessage(request.getStatus());
 
         return new PostStatusResponse();
     }
