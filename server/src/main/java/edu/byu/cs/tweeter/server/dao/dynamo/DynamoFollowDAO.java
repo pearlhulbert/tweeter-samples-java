@@ -187,37 +187,6 @@ public class DynamoFollowDAO implements FollowDAO {
         }
 
         @Override
-        public List<User> dataPageToFollowees(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory) {
-                List<User> followers = new ArrayList<>();
-                for(DynamoFollow dynamoFollow : dataPage.getValues()) {
-                        DynamoUser dyanmoUser = daoFactory.getUserDAO().getUser(dynamoFollow.get_followee_handle());
-                        User user = daoFactory.getUserDAO().dynamoUserToUser(dyanmoUser);
-                        followers.add(user);
-                }
-                return followers;
-        }
-
-        @Override
-        public List<User> dataPageToFollowers(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory) {
-                List<User> followers = new ArrayList<>();
-                for(DynamoFollow dynamoFollow : dataPage.getValues()) {
-                        DynamoUser dyanmoUser = daoFactory.getUserDAO().getUser(dynamoFollow.get_follower_handle());
-                        User user = daoFactory.getUserDAO().dynamoUserToUser(dyanmoUser);
-                        followers.add(user);
-                }
-                return followers;
-        }
-
-        @Override
-        public boolean isFollowing(String followerHandle, String followeeHandle) {
-                DynamoFollow follow = getFollow(followerHandle, followeeHandle);
-                if (follow == null) {
-                        return false;
-                }
-                return true;
-        }
-
-        @Override
         public List<String> getFollowerHandles(String alias) {
                 DynamoDbIndex<DynamoFollow> index = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class)).index(IndexName);
                 Key key = Key.builder()
@@ -246,5 +215,13 @@ public class DynamoFollowDAO implements FollowDAO {
                 return aliases;
         }
 
+        @Override
+        public boolean isFollowing(String followerHandle, String followeeHandle) {
+                DynamoFollow follow = getFollow(followerHandle, followeeHandle);
+                if (follow == null) {
+                        return false;
+                }
+                return true;
+        }
 
 }

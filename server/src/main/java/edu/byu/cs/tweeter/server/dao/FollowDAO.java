@@ -12,8 +12,6 @@ public interface FollowDAO {
     void follow(String followerHandle, String followerName, String followeeHandle, String followeeName);
     DataPage<DynamoFollow> getFollowees(String followerHandle, int pageSize, String lastFollowee);
     DataPage<DynamoFollow> getFollowers(String followeeHandle, int pageSize, String lastFollower);
-    List<User> dataPageToFollowees(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory);
-    List<User> dataPageToFollowers(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory);
     boolean isFollowing(String followerHandle, String followeeHandle);
     void unFollow(String followerHandle, String followeeHandle);
     DynamoFollow getFollow(String followerHandle, String followeeHandle);

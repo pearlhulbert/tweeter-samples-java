@@ -13,25 +13,30 @@ import edu.byu.cs.tweeter.server.dao.factory.DynamoFactory;
 import edu.byu.cs.tweeter.server.service.SendMessageService;
 import edu.byu.cs.tweeter.server.service.domain.PostStatus;
 
-public class PostUpdateFeeds {
+public class PostUpdateFeeds implements RequestHandler<SQSEvent, Void> {
 
-    public class QueueProcessor implements RequestHandler<SQSEvent, Void> {
-
-        @Override
-        public Void handleRequest(SQSEvent event, Context context) {
-            DAOFactory factory = new DynamoFactory();
-            Status status = new Status();
-            for (SQSEvent.SQSMessage msg : event.getRecords()) {
-               String body = msg.getBody();
-               status = new Gson().fromJson(body, Status.class);
-            }
-            //how many times is this called?
+    @Override
+    public Void handleRequest(SQSEvent event, Context context) {
+        DAOFactory factory = new DynamoFactory();
+        Status status = new Status();
+        for (SQSEvent.SQSMessage msg : event.getRecords()) {
+           String body = msg.getBody();
+           System.out.println("Body: " + body);
+           status = new Gson().fromJson(body, Status.class);
             DataPage<DynamoFollow> followers = factory.getFollowDAO().getFollowers(status.getUser().getAlias(), 25, null);
-            PostStatus postStatus = new PostStatus(status, followers);
-            SendMessageService service = new SendMessageService();
-            service.sendPostStatusUpdateMessage(postStatus);
-            return null;
+            System.out.println("hasmorepages: " + followers.getHasMorePages());
+            System.out.println("followers: " + followers.getValues());
+            followers.setHasMorePages(true);
+            while (followers.getHasMorePages()) {
+                DynamoFollow lastFollow = followers.getValues().get(followers.getValues().size() - 1);
+                System.out.println("lastFollow: " + lastFollow);
+                followers = factory.getFollowDAO().getFollowers(status.getUser().getAlias(), 25, lastFollow.get_follower_handle());
+                PostStatus postStatus = new PostStatus(status, followers);
+                SendMessageService service = new SendMessageService();
+                service.sendPostStatusUpdateMessage(postStatus);
+            }
         }
+        return null;
     }
 
 }

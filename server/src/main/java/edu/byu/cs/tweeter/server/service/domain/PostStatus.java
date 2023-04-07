@@ -13,7 +13,7 @@ public class PostStatus {
     private DataPage<DynamoFollow> followers;
 
 
-    private PostStatus() {}
+    public PostStatus() {}
 
     public PostStatus(Status status, DataPage<DynamoFollow> followers) {
         this.status = status;

@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
@@ -34,6 +35,9 @@ public class FollowService {
         this.daoFactory = daoFactory;
     }
 
+    public FollowService() {
+        this.daoFactory = null;
+    }
     /**
      * Returns the users that the user specified in the request is following. Uses information in
      * the request object to limit the number of followees returned and to return the next set of
@@ -54,7 +58,7 @@ public class FollowService {
             return new FollowingResponse("Invalid auth token, user no longer active");
         }
         DataPage<DynamoFollow> page = daoFactory.getFollowDAO().getFollowees(request.getFollowerAlias(), request.getLimit(), request.getLastFolloweeAlias());
-        List<User> followees = daoFactory.getFollowDAO().dataPageToFollowees(page, daoFactory);
+        List<User> followees = dataPageToFollowees(page, daoFactory);
         System.out.println("Followees: " + followees);
         return new FollowingResponse(followees, page.getHasMorePages());
     }
@@ -70,7 +74,7 @@ public class FollowService {
             return new FollowerResponse("Invalid auth token, user no longer active");
         }
         DataPage<DynamoFollow> page = daoFactory.getFollowDAO().getFollowers(request.getFolloweeAlias(), request.getLimit(), request.getLastFollowerAlias());
-        List<User> followers = daoFactory.getFollowDAO().dataPageToFollowers(page, daoFactory);
+        List<User> followers = dataPageToFollowers(page, daoFactory);
         return new FollowerResponse(followers, page.getHasMorePages());
     }
 
@@ -154,5 +158,26 @@ public class FollowService {
             return new IsFollowerResponse("Invalid auth token, user no longer active");
         }
         return new IsFollowerResponse(daoFactory.getFollowDAO().isFollowing(request.getFollower().getAlias(), request.getFollowee().getAlias()));
+    }
+
+    public List<User> dataPageToFollowers(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory) {
+        List<User> followers = new ArrayList<>();
+        for(DynamoFollow dynamoFollow : dataPage.getValues()) {
+            DynamoUser dyanmoUser = daoFactory.getUserDAO().getUser(dynamoFollow.get_follower_handle());
+            System.out.println("User from data page " + dyanmoUser.getAlias());
+            User user = daoFactory.getUserDAO().dynamoUserToUser(dyanmoUser);
+            followers.add(user);
+        }
+        return followers;
+    }
+
+    public List<User> dataPageToFollowees(DataPage<DynamoFollow> dataPage, DAOFactory daoFactory) {
+        List<User> followers = new ArrayList<>();
+        for(DynamoFollow dynamoFollow : dataPage.getValues()) {
+            DynamoUser dyanmoUser = daoFactory.getUserDAO().getUser(dynamoFollow.get_followee_handle());
+            User user = daoFactory.getUserDAO().dynamoUserToUser(dyanmoUser);
+            followers.add(user);
+        }
+        return followers;
     }
 }

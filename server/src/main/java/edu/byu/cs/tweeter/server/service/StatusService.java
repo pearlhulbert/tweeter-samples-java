@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.FeedRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.StoryRequest;
@@ -117,5 +118,11 @@ public class StatusService {
         return new PostStatusResponse();
     }
 
+    public void updateFeed(Status status, List<User> followers) {
+        for (User follower : followers) {
+            System.out.println("Updating feed for " + follower.getAlias());
+            daoFactory.getFeedDAO().updateFeed(follower.getAlias(), status);
+        }
+    }
 
 }

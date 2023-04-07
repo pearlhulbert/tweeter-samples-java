@@ -13,6 +13,7 @@ public class SendMessageService {
 
     public void sendPostStatusUpdateMessage(PostStatus status) {
         String messageBody = new Gson().toJson(status);
+        System.out.println("Message body: " + messageBody);
         String queueUrl = "https://sqs.us-west-2.amazonaws.com/063112404896/TweeterUpdateFeedQueue";
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
