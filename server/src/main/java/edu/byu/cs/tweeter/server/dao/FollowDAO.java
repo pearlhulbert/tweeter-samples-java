@@ -16,4 +16,5 @@ public interface FollowDAO {
     void unFollow(String followerHandle, String followeeHandle);
     DynamoFollow getFollow(String followerHandle, String followeeHandle);
     List<String> getFollowerHandles(String alias);
+    void addFollowerBatch(List<User> followers, String followeeHandle, String followeeName);
 }

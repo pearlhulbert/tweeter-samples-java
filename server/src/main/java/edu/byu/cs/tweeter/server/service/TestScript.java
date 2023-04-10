@@ -40,10 +40,11 @@ public class TestScript {
 
         // How many follower users to add
         // We recommend you test this with a smaller number first, to make sure it works for you
-        int NUM_USERS = 10;
+        int NUM_USERS = 10000;
 
 
         udao.addUser("@p", "Pearl", "Hulbert", "p", "https://image-tweeter-bucket.s3.us-west-2.amazonaws.com/IMG_9488.jpg");
+        List<User> users = new ArrayList<>();
 
         // Iterate over the number of users you will create
         for (int i = 1; i <= NUM_USERS; i++) {
@@ -51,11 +52,15 @@ public class TestScript {
             String firstName = "Gal";
             String lastName = " " + i;
             String alias = "@gal" + i;
+            String url = "https://image-tweeter-bucket.s3.us-west-2.amazonaws.com/baby-grand-brown.jpg";
 
-            // Note that in this example, a UserDTO only has a name and an alias.
-            // The url for the profile image can be derived from the alias in this example
-            //udao.addUser(alias, firstName, lastName, "pass", "https://image-tweeter-bucket.s3.us-west-2.amazonaws.com/IMG_9488.jpg");
-            fdao.follow(alias, firstName + lastName, "@p", "Pearl Hulbert");
+            User user = new User(firstName, lastName, alias, url);
+            users.add(user);
+        }
+
+        if (users.size() > 0) {
+            udao.addUserBatch(users);
+            //fdao.addFollowerBatch(users, "@p", "Pearl Hulbert");
         }
 
     }

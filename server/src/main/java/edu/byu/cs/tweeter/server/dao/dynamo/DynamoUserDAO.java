@@ -4,20 +4,27 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.model.net.response.RegisterResponse;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
+import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFollow;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteResult;
+import software.amazon.awssdk.enhanced.dynamodb.model.WriteBatch;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 public class DynamoUserDAO implements UserDAO {
 
@@ -181,5 +188,55 @@ public class DynamoUserDAO implements UserDAO {
         addUser(alias, firstName, lastName, password, imageUrl);
         User newUser = new User(firstName, lastName, alias, imageUrl);
         return new RegisterResponse(newUser, authToken);
+    }
+
+    @Override
+    public void addUserBatch(List<User> users) {
+        List<DynamoUser> batchToWrite = new ArrayList<>();
+        for (User u : users) {
+            String salt = generateSalt();
+            String password = createSecurePassword("pass", salt);
+            DynamoUser dto = new DynamoUser(u.getAlias(), u.getFirstName(), u.getLastName(), password, u.getImageUrl());
+            dto.setSalt(salt);
+            batchToWrite.add(dto);
+
+            if (batchToWrite.size() == 25) {
+                // package this batch up and send to DynamoDB.
+                writeChunkOfUserDTOs(batchToWrite);
+                batchToWrite = new ArrayList<>();
+            }
+        }
+
+        // write any remaining
+        if (batchToWrite.size() > 0) {
+            // package this batch up and send to DynamoDB.
+            writeChunkOfUserDTOs(batchToWrite);
+        }
+    }
+
+    private void writeChunkOfUserDTOs(List<DynamoUser> userDTOs) {
+        if(userDTOs.size() > 25)
+            throw new RuntimeException("Too many users to write");
+
+        DynamoDbTable<DynamoUser> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(DynamoUser.class));
+        WriteBatch.Builder<DynamoUser> writeBuilder = WriteBatch.builder(DynamoUser.class).mappedTableResource(table);
+        for (DynamoUser item : userDTOs) {
+            writeBuilder.addPutItem(builder -> builder.item(item));
+        }
+        BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
+                .writeBatches(writeBuilder.build()).build();
+
+        try {
+            BatchWriteResult result = enhancedClient.batchWriteItem(batchWriteItemEnhancedRequest);
+
+            // just hammer dynamodb again with anything that didn't get written this time
+            if (result.unprocessedPutItemsForTable(table).size() > 0) {
+                writeChunkOfUserDTOs(result.unprocessedPutItemsForTable(table));
+            }
+
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 }

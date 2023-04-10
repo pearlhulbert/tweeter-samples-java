@@ -90,7 +90,7 @@ public class DynamoFeedDAO implements FeedDAO {
         Long date = Long.valueOf(postedStatus.getDate());
         DynamoStatus dynamoStatus = new DynamoStatus(postedStatus.getPost(), postedStatus.getUser().getAlias(), date, postedStatus.getMentions(), postedStatus.getUrls());
         DynamoFeed dynamoFeed = new DynamoFeed(alias, date, dynamoStatus);
-
+        System.out.println("dynamo feed is " + dynamoFeed);
         System.out.println("Updating feed for " + alias + " with status " + dynamoStatus.getPost());
         table.putItem(dynamoFeed);
     }

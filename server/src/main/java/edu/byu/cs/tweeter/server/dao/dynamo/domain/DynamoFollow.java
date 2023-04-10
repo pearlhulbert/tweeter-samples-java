@@ -11,6 +11,16 @@ public class DynamoFollow {
 
     private String followee_name;
 
+    public DynamoFollow() {
+    }
+
+    public DynamoFollow(String followerHandle, String followerName, String followeeHandle, String followeeName) {
+        this.follower_handle = followerHandle;
+        this.follower_name = followerName;
+        this.followee_handle = followeeHandle;
+        this.followee_name = followeeName;
+    }
+
     @DynamoDbPartitionKey
     @DynamoDbSecondarySortKey(indexNames = DynamoFollowDAO.IndexName)
     @DynamoDbAttribute("follower_handle")

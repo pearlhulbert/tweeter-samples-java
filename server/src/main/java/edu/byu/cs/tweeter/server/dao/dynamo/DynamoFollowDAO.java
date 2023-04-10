@@ -1,20 +1,23 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
+import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.UserDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoFollow;
 import edu.byu.cs.tweeter.server.dao.dynamo.domain.DynamoUser;
-import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteResult;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.WriteBatch;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -222,6 +225,54 @@ public class DynamoFollowDAO implements FollowDAO {
                         return false;
                 }
                 return true;
+        }
+
+        @Override
+        public void addFollowerBatch(List<User> followers, String followeeHandle, String followeeName) {
+                List<DynamoFollow> batchToWrite = new ArrayList<>();
+                for (User follow : followers) {
+                        String followerName = follow.getFirstName() + follow.getLastName();
+                        DynamoFollow dto = new DynamoFollow(follow.getAlias(), followerName, followeeHandle, followeeName);
+                        batchToWrite.add(dto);
+
+                        if (batchToWrite.size() == 25) {
+                                // package this batch up and send to DynamoDB.
+                                writeChunkOfFollowDTOs(batchToWrite);
+                                batchToWrite = new ArrayList<>();
+                        }
+                }
+
+                // write any remaining
+                if (batchToWrite.size() > 0) {
+                        // package this batch up and send to DynamoDB.
+                        writeChunkOfFollowDTOs(batchToWrite);
+                }
+        }
+
+        private void writeChunkOfFollowDTOs(List<DynamoFollow> followDTOs) {
+                if(followDTOs.size() > 25)
+                        throw new RuntimeException("Too many users to write");
+
+                DynamoDbTable<DynamoFollow> table = enhancedClient.table(TableName, TableSchema.fromBean(DynamoFollow.class));
+                WriteBatch.Builder<DynamoFollow> writeBuilder = WriteBatch.builder(DynamoFollow.class).mappedTableResource(table);
+                for (DynamoFollow item : followDTOs) {
+                        writeBuilder.addPutItem(builder -> builder.item(item));
+                }
+                BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
+                        .writeBatches(writeBuilder.build()).build();
+
+                try {
+                        BatchWriteResult result = enhancedClient.batchWriteItem(batchWriteItemEnhancedRequest);
+
+                        // just hammer dynamodb again with anything that didn't get written this time
+                        if (result.unprocessedPutItemsForTable(table).size() > 0) {
+                                writeChunkOfFollowDTOs(result.unprocessedPutItemsForTable(table));
+                        }
+
+                } catch (DynamoDbException e) {
+                        System.err.println(e.getMessage());
+                        System.exit(1);
+                }
         }
 
 }
