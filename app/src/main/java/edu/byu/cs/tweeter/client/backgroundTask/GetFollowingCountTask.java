@@ -30,7 +30,7 @@ public class GetFollowingCountTask extends GetCountTask {
             FollowingCountResponse response = getServerFacade().getFollowingCount(request, URL_PATH);
 
             if (response.isSuccess()) {
-                System.out.println("Following:" + response.getCount());
+                //System.out.println("Following:" + response.getCount());
                 return response.getCount();
             }
             else {

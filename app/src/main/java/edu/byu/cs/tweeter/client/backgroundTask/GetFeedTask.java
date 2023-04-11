@@ -37,7 +37,7 @@ public class GetFeedTask extends PageTasks<Status> {
             //String post = lastItem == null ? null : lastItem.getPost();
             FeedRequest request = new FeedRequest(authToken, targetUserAlias, limit, lastItem);
             //String entityBody = JsonSerializer.serialize(request);
-            System.out.println("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());
+            //System.out.println("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());
 //            if (true) {
 //                throw new RuntimeException("GetFeedTask: " + request.getUserAlias() + " " + request.getLimit() + " " + request.getLastStatus());
 //            }

@@ -23,11 +23,11 @@ public class PostUpdateFeeds implements RequestHandler<SQSEvent, Void> {
         Status status = new Status();
         for (SQSEvent.SQSMessage msg : event.getRecords()) {
             String body = msg.getBody();
-            System.out.println("Body: " + body);
+            //System.out.println("Body: " + body);
             status = new Gson().fromJson(body, Status.class);
-            System.out.println("status: " + status);
+            //System.out.println("status: " + status);
             String alaias = status.getUser().getAlias();
-            System.out.println("alaias: " + alaias);
+            //System.out.println("alaias: " + alaias);
             DataPage<DynamoFollow> followers = new DataPage<>();
             followers.setHasMorePages(true);
             DynamoFollow lastFollow = new DynamoFollow();
@@ -37,10 +37,10 @@ public class PostUpdateFeeds implements RequestHandler<SQSEvent, Void> {
                 }
                 else {
                     lastFollow = followers.getValues().get(followers.getValues().size() - 1);
-                    System.out.println("lastFollow: " + lastFollow);
+                    //System.out.println("lastFollow: " + lastFollow);
                     followers = factory.getFollowDAO().getFollowers(status.getUser().getAlias(), 25, lastFollow.get_follower_handle());
                 }
-                System.out.println("followers: " + followers);
+                //System.out.println("followers: " + followers);
                 PostStatus postStatus = new PostStatus(status, followers);
                 SendMessageService service = new SendMessageService();
                 service.sendPostStatusUpdateMessage(postStatus);

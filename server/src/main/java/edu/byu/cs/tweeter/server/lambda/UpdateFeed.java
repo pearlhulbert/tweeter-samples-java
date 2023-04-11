@@ -25,17 +25,17 @@ public class UpdateFeed implements RequestHandler<SQSEvent, Void> {
         PostStatus status = new PostStatus();
         for (SQSEvent.SQSMessage msg : event.getRecords()) {
             String body = msg.getBody();
-            System.out.println("Body: " + body);
+            //System.out.println("Body: " + body);
             status = new Gson().fromJson(body, PostStatus.class);
-            System.out.println("status: " + status);
+            //System.out.println("status: " + status);
             DAOFactory daoFactory = new DynamoFactory();
             StatusService service = new StatusService(daoFactory);
             FollowService followService = new FollowService();
             DataPage<DynamoFollow> dynamoFollowers = status.getFollowers();
-            System.out.println("dynamoFollowers: " + dynamoFollowers);
-            System.out.println("dynamoFollowers.getValues(): " + dynamoFollowers.getValues());
+            //System.out.println("dynamoFollowers: " + dynamoFollowers);
+            //System.out.println("dynamoFollowers.getValues(): " + dynamoFollowers.getValues());
             List<User> followers = followService.dataPageToFollowers(dynamoFollowers, daoFactory);
-            System.out.println("followers: " + followers);
+            //System.out.println("followers: " + followers);
             service.updateFeed(status.getStatus(), followers);
         }
         return null;

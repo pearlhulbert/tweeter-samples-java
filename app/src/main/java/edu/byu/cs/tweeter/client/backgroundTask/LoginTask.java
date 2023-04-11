@@ -27,7 +27,7 @@ public class LoginTask extends AuthenticateTask {
         try {
             LoginRequest request = new LoginRequest(alias, password);
             LoginResponse response = getServerFacade().login(request, URL_PATH);
-            System.out.println("LoginTask: " + response.getMessage());
+            //System.out.println("LoginTask: " + response.getMessage());
             if (response.isSuccess()) {
                 Cache.getInstance().setCurrUser(response.getUser());
                 Cache.getInstance().setCurrUserAuthToken(response.getAuthToken());

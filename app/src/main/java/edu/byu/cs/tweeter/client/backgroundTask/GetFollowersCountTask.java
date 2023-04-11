@@ -29,7 +29,7 @@ public class GetFollowersCountTask extends GetCountTask {
             FollowerCountResponse response = getServerFacade().getFollowerCount(request, URL_PATH);
 
             if (response.isSuccess()) {
-                System.out.println("GetFollowersCountTask: " + response.getCount());
+                //System.out.println("GetFollowersCountTask: " + response.getCount());
                 return response.getCount();
             }
             else {
