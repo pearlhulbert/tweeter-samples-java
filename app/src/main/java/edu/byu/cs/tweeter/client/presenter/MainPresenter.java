@@ -11,6 +11,7 @@ public class MainPresenter {
     private FollowService followService;
     private UserService logoutService;
     private StatusService postStatusService;
+    //private PostStatusObserver postStatusObserver;
 
     public MainPresenter(MainView view) {
         this.view = view;
@@ -26,12 +27,19 @@ public class MainPresenter {
         return logoutService;
     }
 
-    protected StatusService getStatusService() {
-        if (postStatusService == null) {
-            postStatusService = new StatusService();
-        }
-        return postStatusService;
-    }
+//    protected StatusService getStatusService() {
+//        if (postStatusService == null) {
+//            postStatusService = new StatusService();
+//        }
+//        return postStatusService;
+//    }
+
+//    protected StatusService.SimpleObserver getPostStatusObserver() {
+//        if (postStatusObserver == null) {
+//            postStatusObserver = new PostStatusObserver();
+//        }
+//        return postStatusObserver;
+//    }
 
     public void unfollowUser(User selectedUser) {
        followService.unfollowUser(selectedUser, new UnfollowObserver());
@@ -50,7 +58,7 @@ public class MainPresenter {
     }
 
     public void postStatus(String post) {
-        getStatusService().postStatus(post, new PostStatusObserver());
+       postStatusService.postStatus(post, new PostStatusObserver());
     }
 
     public void getCounts(User selectedUser) {
@@ -74,7 +82,7 @@ public class MainPresenter {
 
         void logoutUser();
 
-        void postToast();
+        //void postToast();
 
         void updateRelationship(boolean isFollowing);
     }
@@ -152,7 +160,7 @@ public class MainPresenter {
     private class PostStatusObserver implements StatusService.SimpleObserver {
         @Override
         public void handleSuccess() {
-            postToast();
+            view.displayMessage("Status successfully posted");
         }
 
         @Override
@@ -160,10 +168,6 @@ public class MainPresenter {
             view.displayMessage(message);
         }
 
-        @Override
-        public void postToast() {
-            view.postToast();
-        }
     }
 
     private class FollowersCountObserver implements FollowService.FollowersCountObserver {

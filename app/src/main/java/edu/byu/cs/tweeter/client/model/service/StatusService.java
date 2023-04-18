@@ -32,7 +32,6 @@ public class StatusService extends Service {
 
     public interface SimpleObserver extends SimpleNotificationObserver {
 
-        void postToast();
     }
 
     public void loadMoreFeedItems(User user, int pageSize, Status lastStatus, Observer observer) {
@@ -111,7 +110,7 @@ public class StatusService extends Service {
     }
 
     public void postStatus(String post, SimpleObserver observer) {
-        observer.postToast();
+        //observer.displayMessage("Posting status...");
         try {
             Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
             PostStatusTask statusTask = new PostStatusTask(Cache.getInstance().getCurrUserAuthToken(),
